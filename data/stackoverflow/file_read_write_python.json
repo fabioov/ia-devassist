@@ -1,0 +1,116 @@
+[
+  {
+    "titulo": "open() in Python does not create a file if it doesn&#39;t exist",
+    "pergunta": "<p>What is the best way to open a file as read/write if it exists, or if it does not, then create it and open it as read/write? From what I read, <code>file = open('myfile.dat', 'rw')</code> should do this, right?</p>\n<p>It is not working for me (Python 2.6.2) and I'm wondering if it is a version problem, or not supposed to work like that or what.</p>\n<p>The enclosing directory was writeable by user and group, not other (I'm on a Linux system... so permissions 775 in other words), and the exact error was:</p>\n<pre><code>IOError: no such file or directory.\n</code></pre>\n",
+    "tags": [
+      "python",
+      "linux",
+      "file-io",
+      "file-permissions"
+    ],
+    "votos": 985,
+    "link": "https://stackoverflow.com/questions/2967194/open-in-python-does-not-create-a-file-if-it-doesnt-exist"
+  },
+  {
+    "titulo": "How can I explicitly free memory in Python?",
+    "pergunta": "<p>I wrote a Python program that acts on a large input file to create a few million objects representing triangles.  The algorithm is:</p>\n\n<ol>\n<li>read an input file</li>\n<li>process the file and create a list of triangles, represented by their vertices</li>\n<li>output the vertices in the OFF format: a list of vertices followed by a list of triangles.  The triangles are represented by indices into the list of vertices</li>\n</ol>\n\n<p>The requirement of OFF that I print out the complete list of vertices before I print out the triangles means that I have to hold the list of triangles in memory before I write the output to file.  In the meanwhile I'm getting memory errors because of the sizes of the lists.  </p>\n\n<p>What is the best way to tell Python that I no longer need some of the data, and it can be freed?</p>\n",
+    "tags": [
+      "python",
+      "memory",
+      "memory-management"
+    ],
+    "votos": 640,
+    "link": "https://stackoverflow.com/questions/1316767/how-can-i-explicitly-free-memory-in-python"
+  },
+  {
+    "titulo": "What&#39;s the best practice using a settings(config) file in Python?",
+    "pergunta": "<p>The goal is to simplify using many arguments in a Python program by writing a config (settings) file that dynamically can add an item.</p>\n<p>What is the best practice for using a settings (config) file or importing a library in Python?</p>\n<p>use case:</p>\n<ul>\n<li><p>Rather than using <code>pickle</code> I would like it to be a straightforward text file that can easily be read and edited.</p>\n</li>\n<li><p>I want to be able to add data in it(like a dictionary) (i.e.: some form of nesting should be supported).</p>\n</li>\n</ul>\n<p>An example file:</p>\n<pre><code>truck:\n    color: blue\n    brand: ford\ncity: new york\ncabriolet:\n    color: black\n    engine:\n        cylinders: 8\n        placement: mid\n    doors: 2\n</code></pre>\n",
+    "tags": [
+      "python",
+      "parsing",
+      "configuration",
+      "yaml",
+      "settings"
+    ],
+    "votos": 511,
+    "link": "https://stackoverflow.com/questions/5055042/whats-the-best-practice-using-a-settingsconfig-file-in-python"
+  },
+  {
+    "titulo": "Unicode (UTF-8) reading and writing to files in Python",
+    "pergunta": "<p>I'm having some brain failure in understanding reading and writing text to a file (Python 2.4).</p>\n\n<pre><code># The string, which has an a-acute in it.\nss = u'Capit\\xe1n'\nss8 = ss.encode('utf8')\nrepr(ss), repr(ss8)\n</code></pre>\n\n<blockquote>\n  <p>(\"u'Capit\\xe1n'\", \"'Capit\\xc3\\xa1n'\")</p>\n</blockquote>\n\n<pre><code>print ss, ss8\nprint &gt;&gt; open('f1','w'), ss8\n\n&gt;&gt;&gt; file('f1').read()\n'Capit\\xc3\\xa1n\\n'\n</code></pre>\n\n<p>So I type in <code>Capit\\xc3\\xa1n</code> into my favorite editor, in file f2.</p>\n\n<p>Then:</p>\n\n<pre><code>&gt;&gt;&gt; open('f1').read()\n'Capit\\xc3\\xa1n\\n'\n&gt;&gt;&gt; open('f2').read()\n'Capit\\\\xc3\\\\xa1n\\n'\n&gt;&gt;&gt; open('f1').read().decode('utf8')\nu'Capit\\xe1n\\n'\n&gt;&gt;&gt; open('f2').read().decode('utf8')\nu'Capit\\\\xc3\\\\xa1n\\n'\n</code></pre>\n\n<p>What am I not understanding here? Clearly there is some vital bit of magic (or good sense) that I'm missing. What does one type into text files to get proper conversions?</p>\n\n<p>What I'm truly failing to grok here, is what the point of the UTF-8 representation is, if you can't actually get Python to recognize it, when it comes from outside. Maybe I should just JSON dump the string, and use that instead, since that has an asciiable representation! More to the point, is there an ASCII representation of this Unicode object that Python will recognize and decode, when coming in from a file?  If so, how do I get it?</p>\n\n<pre><code>&gt;&gt;&gt; print simplejson.dumps(ss)\n'\"Capit\\u00e1n\"'\n&gt;&gt;&gt; print &gt;&gt; file('f3','w'), simplejson.dumps(ss)\n&gt;&gt;&gt; simplejson.load(open('f3'))\nu'Capit\\xe1n'\n</code></pre>\n",
+    "tags": [
+      "python",
+      "unicode",
+      "utf-8",
+      "io"
+    ],
+    "votos": 433,
+    "link": "https://stackoverflow.com/questions/491921/unicode-utf-8-reading-and-writing-to-files-in-python"
+  },
+  {
+    "titulo": "Reading in environment variables from an environment file",
+    "pergunta": "<p>I'd like to run in a local environment a Python script which is normally run in a Docker container. The <code>docker-compose.yml</code> specifies an <a href=\"https://docs.docker.com/compose/env-file/\" rel=\"noreferrer\">env_file</a> which looks (partially) like the following:</p>\n\n<pre><code>DB_ADDR=rethinkdb\nDB_PORT=28015\nDB_NAME=ipercron\n</code></pre>\n\n<p>In order to run this locally, I would like these lines to be converted to</p>\n\n<pre><code>os.environ['DB_ADDR'] = 'rethinkdb'\nos.environ['DB_PORT'] = '28015'\nos.environ['DB_NAME'] = 'ipercron'\n</code></pre>\n\n<p>I could write my parser, but I was wondering if there are any existing modules/tools to read in environment variables from configuration files?</p>\n",
+    "tags": [
+      "python",
+      "docker"
+    ],
+    "votos": 362,
+    "link": "https://stackoverflow.com/questions/40216311/reading-in-environment-variables-from-an-environment-file"
+  },
+  {
+    "titulo": "Python recursive folder read",
+    "pergunta": "<p>I have a C++/Obj-C background and I am just discovering Python (been writing it for about an hour).\nI am writing a script to recursively read the contents of text files in a folder structure.</p>\n\n<p>The problem I have is the code I have written will only work for one folder deep. I can see why in the code (see <code>#hardcoded path</code>), I just don't know how I can move forward with Python since my experience with it is only brand new.</p>\n\n<p><strong>Python Code:</strong></p>\n\n<pre><code>import os\nimport sys\n\nrootdir = sys.argv[1]\n\nfor root, subFolders, files in os.walk(rootdir):\n\n    for folder in subFolders:\n        outfileName = rootdir + \"/\" + folder + \"/py-outfile.txt\" # hardcoded path\n        folderOut = open( outfileName, 'w' )\n        print \"outfileName is \" + outfileName\n\n        for file in files:\n            filePath = rootdir + '/' + file\n            f = open( filePath, 'r' )\n            toWrite = f.read()\n            print \"Writing '\" + toWrite + \"' to\" + filePath\n            folderOut.write( toWrite )\n            f.close()\n\n        folderOut.close()\n</code></pre>\n",
+    "tags": [
+      "python",
+      "scripting",
+      "file-io"
+    ],
+    "votos": 345,
+    "link": "https://stackoverflow.com/questions/2212643/python-recursive-folder-read"
+  },
+  {
+    "titulo": "How can mypy ignore a single line in a source file?",
+    "pergunta": "<p>I'm using <a href=\"http://mypy-lang.org/\" rel=\"noreferrer\">mypy</a> in my python project for type checking. I'm also using PyYAML for reading and writing the project configuration files. Unfortunately, when using the <a href=\"http://pyyaml.org/wiki/PyYAMLDocumentation\" rel=\"noreferrer\">recommended import mechanism from the PyYAML documentation</a> this generates a spurious error in a try/except clause that attempts to import native libraries:</p>\n<pre><code>from yaml import load, dump\ntry:\n    from yaml import CLoader as Loader, CDumper as Dumper\nexcept ImportError:\n    from yaml import Loader, Dumper\n</code></pre>\n<p>On my system <code>CLoader</code> and <code>CDumper</code> aren't present, which results in the errors <code>error: Module 'yaml' has no attribute 'CLoader'</code> and <code>error: Module 'yaml' has no attribute 'CDumper'</code>.</p>\n<p>Is there a way to have mypy ignore errors on this line? I was hoping that I could do something like this to have mypy skip that line:</p>\n<pre><code>from yaml import load, dump\ntry:\n    from yaml import CLoader as Loader, CDumper as Dumper  # nomypy\nexcept ImportError:\n    from yaml import Loader, Dumper\n</code></pre>\n",
+    "tags": [
+      "python",
+      "python-typing",
+      "mypy"
+    ],
+    "votos": 302,
+    "link": "https://stackoverflow.com/questions/49220022/how-can-mypy-ignore-a-single-line-in-a-source-file"
+  },
+  {
+    "titulo": "How do I concatenate text files in Python?",
+    "pergunta": "<p>I have a list of 20 file names, like <code>['file1.txt', 'file2.txt', ...]</code>. I want to write a Python script to concatenate these files into a new file. I could open each file by <code>f = open(...)</code>, read line by line by calling <code>f.readline()</code>, and write each line into that new file. It doesn't seem very &quot;elegant&quot; to me, especially the part where I have to read/write line by line.</p>\n<p>Is there a more &quot;elegant&quot; way to do this in Python?</p>\n",
+    "tags": [
+      "python",
+      "file-io",
+      "concatenation"
+    ],
+    "votos": 239,
+    "link": "https://stackoverflow.com/questions/13613336/how-do-i-concatenate-text-files-in-python"
+  },
+  {
+    "titulo": "Parse a .py file, read the AST, modify it, then write back the modified source code",
+    "pergunta": "<p>I want to programmatically edit python source code. Basically I want to read a <code>.py</code> file, generate the <a href=\"http://en.wikipedia.org/wiki/Abstract_syntax_tree\" rel=\"noreferrer\">AST</a>, and then write back the modified python source code (i.e. another <code>.py</code> file).</p>\n\n<p>There are ways to parse/compile python source code using standard python modules, such as <a href=\"http://docs.python.org/library/ast.html\" rel=\"noreferrer\"><code>ast</code></a> or <a href=\"http://docs.python.org/library/compiler.html\" rel=\"noreferrer\"><code>compiler</code></a>.  However, I don't think any of them support ways to modify the source code (e.g. delete this function declaration) and then write back the modifying python source code.</p>\n\n<p>UPDATE: The reason I want to do this is I'd like to write a <a href=\"http://en.wikipedia.org/wiki/Mutation_testing\" rel=\"noreferrer\">Mutation testing library</a> for python, mostly by deleting statements / expressions, rerunning tests and seeing what breaks.</p>\n",
+    "tags": [
+      "python",
+      "compiler-construction",
+      "abstract-syntax-tree"
+    ],
+    "votos": 224,
+    "link": "https://stackoverflow.com/questions/768634/parse-a-py-file-read-the-ast-modify-it-then-write-back-the-modified-source-c"
+  },
+  {
+    "titulo": "Pretty-Print JSON Data to a File using Python",
+    "pergunta": "<p>A project for class involves parsing Twitter JSON data. I'm getting the data and setting it to the file without much trouble, but it's all in one line. This is fine for the data manipulation I'm trying to do, but the file is ridiculously hard to read and I can't examine it very well, making the code writing for the data manipulation part very difficult. </p>\n\n<p>Does anyone know how to do that from within Python (i.e. not using the command line tool, which I can't get to work)? Here's my code so far:</p>\n\n<pre><code>header, output = client.request(twitterRequest, method=\"GET\", body=None,\n                            headers=None, force_auth_header=True)\n\n# now write output to a file\ntwitterDataFile = open(\"twitterData.json\", \"wb\")\n# magic happens here to make it pretty-printed\ntwitterDataFile.write(output)\ntwitterDataFile.close()\n</code></pre>\n\n<p><strong>Note</strong> I appreciate people pointing me to simplejson documentation and such, but as I have stated, I have already looked at that and continue to need assistance. A truly helpful reply will be more detailed and explanatory than the examples found there. <em>Thanks</em></p>\n\n<p><strong>Also:</strong>\nTrying this in the windows command line:</p>\n\n<pre><code>more twitterData.json | python -mjson.tool &gt; twitterData-pretty.json\n</code></pre>\n\n<p>results in this:</p>\n\n<pre><code>Invalid control character at: line 1 column 65535 (char 65535)\n</code></pre>\n\n<p>I'd give you the data I'm using, but it's very large and you've already seen the code I used to make the file.</p>\n",
+    "tags": [
+      "python",
+      "json",
+      "twitter",
+      "pretty-print"
+    ],
+    "votos": 218,
+    "link": "https://stackoverflow.com/questions/9170288/pretty-print-json-data-to-a-file-using-python"
+  }
+]

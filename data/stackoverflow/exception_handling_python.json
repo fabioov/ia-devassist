@@ -1,0 +1,117 @@
+[
+  {
+    "titulo": "How to properly ignore exceptions",
+    "pergunta": "<p>When you just want to do a try-except without handling the exception, how do you do it in Python?</p>\n\n<p>Is the following the right way to do it?</p>\n\n<pre><code>try:\n    shutil.rmtree(path)\nexcept:\n    pass\n</code></pre>\n",
+    "tags": [
+      "python",
+      "exception",
+      "try-except"
+    ],
+    "votos": 973,
+    "link": "https://stackoverflow.com/questions/730764/how-to-properly-ignore-exceptions"
+  },
+  {
+    "titulo": "Selenium using Python - Geckodriver executable needs to be in PATH",
+    "pergunta": "<p>I am going over Sweigart's <em>Automate the Boring Stuff with Python</em> text. I'm using <a href=\"https://en.wikipedia.org/wiki/IDLE\" rel=\"noreferrer\">IDLE</a> and already installed the Selenium module and the Firefox browser.</p>\n<p>Whenever I tried to run the webdriver function, I get this:</p>\n<pre><code>from selenium import webdriver\nbrowser = webdriver.Firefox()\n</code></pre>\n<p>Exception:</p>\n<pre class=\"lang-none prettyprint-override\"><code>Exception ignored in: &lt;bound method Service.__del__ of &lt;selenium.webdriver.firefox.service.Service object at 0x00000249C0DA1080&gt;&gt;\nTraceback (most recent call last):\n  File &quot;C:\\Python\\Python35\\lib\\site-packages\\selenium\\webdriver\\common\\service.py&quot;, line 163, in __del__\n    self.stop()\n  File &quot;C:\\Python\\Python35\\lib\\site-packages\\selenium\\webdriver\\common\\service.py&quot;, line 135, in stop\n    if self.process is None:\nAttributeError: 'Service' object has no attribute 'process'\nException ignored in: &lt;bound method Service.__del__ of &lt;selenium.webdriver.firefox.service.Service object at 0x00000249C0E08128&gt;&gt;\nTraceback (most recent call last):\n  File &quot;C:\\Python\\Python35\\lib\\site-packages\\selenium\\webdriver\\common\\service.py&quot;, line 163, in __del__\n    self.stop()\n  File &quot;C:\\Python\\Python35\\lib\\site-packages\\selenium\\webdriver\\common\\service.py&quot;, line 135, in stop\n    if self.process is None:\nAttributeError: 'Service' object has no attribute 'process'\nTraceback (most recent call last):\n  File &quot;C:\\Python\\Python35\\lib\\site-packages\\selenium\\webdriver\\common\\service.py&quot;, line 64, in start\n    stdout=self.log_file, stderr=self.log_file)\n  File &quot;C:\\Python\\Python35\\lib\\subprocess.py&quot;, line 947, in __init__\n    restore_signals, start_new_session)\n  File &quot;C:\\Python\\Python35\\lib\\subprocess.py&quot;, line 1224, in _execute_child\n    startupinfo)\nFileNotFoundError: [WinError 2] The system cannot find the file specified\n</code></pre>\n<p>During handling of the above exception, another exception occurred:</p>\n<pre class=\"lang-none prettyprint-override\"><code>Traceback (most recent call last):\n  File &quot;&lt;pyshell#11&gt;&quot;, line 1, in &lt;module&gt;\n    browser = webdriver.Firefox()\n  File &quot;C:\\Python\\Python35\\lib\\site-packages\\selenium\\webdriver\\firefox\\webdriver.py&quot;, line 135, in __init__\n    self.service.start()\n  File &quot;C:\\Python\\Python35\\lib\\site-packages\\selenium\\webdriver\\common\\service.py&quot;, line 71, in start\n    os.path.basename(self.path), self.start_error_message)\nselenium.common.exceptions.WebDriverException: Message: 'geckodriver' executable needs to be in PATH.\n</code></pre>\n<p>I think I need to set the path for <code>geckodriver</code>, but I am not sure how, so how would I do this?</p>\n",
+    "tags": [
+      "python",
+      "selenium",
+      "firefox",
+      "selenium-firefoxdriver",
+      "geckodriver"
+    ],
+    "votos": 644,
+    "link": "https://stackoverflow.com/questions/40208051/selenium-using-python-geckodriver-executable-needs-to-be-in-path"
+  },
+  {
+    "titulo": "Is it a good practice to use try-except-else in Python?",
+    "pergunta": "<p>From time to time in Python, I see the block:</p>\n\n<pre><code>try:\n   try_this(whatever)\nexcept SomeException as exception:\n   #Handle exception\nelse:\n   return something\n</code></pre>\n\n<p><strong>What is the reason for the try-except-else to exist?</strong></p>\n\n<p>I do not like that kind of programming, as it is using exceptions to perform flow control. However, if it is included in the language, there must be a good reason for it, isn't it?</p>\n\n<p><strong>It is my understanding that exceptions are not errors</strong>, and that they should only be used for exceptional conditions (e.g. I try to write a file into disk and there is no more space, or maybe I do not have permission), and not for flow control. </p>\n\n<p>Normally I handle exceptions as:</p>\n\n<pre><code>something = some_default_value\ntry:\n    something = try_this(whatever)\nexcept SomeException as exception:\n    #Handle exception\nfinally:\n    return something\n</code></pre>\n\n<p>Or if I really do not want to return anything if an exception happens, then:</p>\n\n<pre><code>try:\n    something = try_this(whatever)\n    return something\nexcept SomeException as exception:\n    #Handle exception\n</code></pre>\n",
+    "tags": [
+      "python",
+      "exception",
+      "try-catch"
+    ],
+    "votos": 582,
+    "link": "https://stackoverflow.com/questions/16138232/is-it-a-good-practice-to-use-try-except-else-in-python"
+  },
+  {
+    "titulo": "Catching an exception while using a Python &#39;with&#39; statement",
+    "pergunta": "<p>I can't figure out how to handle exception for python 'with' statement. If I have a code:</p>\n<pre><code>with open(&quot;a.txt&quot;) as f:\n    print f.readlines()\n</code></pre>\n<p>I really want to handle 'file not found exception' in order to do something. But I can't write</p>\n<pre><code>with open(&quot;a.txt&quot;) as f:\n    print f.readlines()\nexcept:\n    print 'oops'\n</code></pre>\n<p>and can't write</p>\n<pre><code>with open(&quot;a.txt&quot;) as f:\n    print f.readlines()\nelse:\n    print 'oops'\n</code></pre>\n<p>Enclosing <code>with</code> in a try/except statement doesn't work either, and an exception is not raised. What can I do in order to process failure inside <code>with</code> statement in a Pythonic way?</p>\n",
+    "tags": [
+      "python",
+      "exception"
+    ],
+    "votos": 428,
+    "link": "https://stackoverflow.com/questions/713794/catching-an-exception-while-using-a-python-with-statement"
+  },
+  {
+    "titulo": "One try block with multiple excepts",
+    "pergunta": "<p>In Python, is it possible to have multiple <code>except</code> statements for one <code>try</code> statement? Such as:</p>\n<pre><code>try:\n    #something1\n    #something2\nexcept ExceptionType1:\n    #return xyz\nexcept ExceptionType2:\n    #return abc\n</code></pre>\n<hr />\n<p><sup>For the case of handling multiple exceptions the same way, see <a href=\"https://stackoverflow.com/q/6470428/6045800\">Catch multiple exceptions in one line (except block)</a></sup></p>\n",
+    "tags": [
+      "python",
+      "syntax",
+      "exception"
+    ],
+    "votos": 379,
+    "link": "https://stackoverflow.com/questions/6095717/one-try-block-with-multiple-excepts"
+  },
+  {
+    "titulo": "Pip - Fatal error in launcher: Unable to create process using &#39;&quot;&#39;",
+    "pergunta": "<p>I installed python 3.5.1 via ampps and it's working. However, when i try to use pip, i get the following message:</p>\n\n<pre><code>Fatal error in launcher: Unable to create process using '\"'\n</code></pre>\n\n<p>I already reinstalled ampps into a path which doesn't include any whitespaces. Note that the \"python -m pip\" workaround doesn't work for me too, since i get the following message everytime i use it:</p>\n\n<pre><code>C:\\Users\\MyUserName\\Desktop\\Ampps\\python\\python.exe: Error while finding spec for 'pip.__main__' (&lt;class 'ImportError'&gt;: No module named 'queue'); 'pip' is a package and cannot be directly executed\n</code></pre>\n\n<p>How do i get pip to work properly? I hope, there is a way to use the pip command itself without the preceding python command.</p>\n\n<p>EDIT: This is what happens, if i try to run <code>python -c \"import pip.__main__\"</code>:</p>\n\n<pre><code>Traceback (most recent call last):\n  File \"C:\\Users\\MyUserName\\Desktop\\Ampps\\python\\lib\\site-packages\\pip\\compat\\__init__.py\", line 11, in &lt;module&gt;\n    from logging.config import dictConfig as logging_dictConfig\n  File \"C:\\Users\\MyUserName\\Desktop\\Ampps\\python\\lib\\logging\\config.py\", line 30, in &lt;module&gt;\n    import logging.handlers\n  File \"C:\\Users\\MyUserName\\Desktop\\Ampps\\python\\lib\\logging\\handlers.py\", line 28, in &lt;module&gt;\n    import queue\nImportError: No module named 'queue'\n\nDuring handling of the above exception, another exception occurred:\n\nTraceback (most recent call last):\n  File \"&lt;string&gt;\", line 1, in &lt;module&gt;\n  File \"C:\\Users\\MyUserName\\Desktop\\Ampps\\python\\lib\\site-packages\\pip\\__init__.py\", line 13, in &lt;module&gt;\n    from pip.utils import get_installed_distributions, get_prog\n  File \"C:\\Users\\MyUserName\\Desktop\\Ampps\\python\\lib\\site-packages\\pip\\utils\\__init__.py\", line 18, in &lt;module&gt;\n    from pip.compat import console_to_str, stdlib_pkgs\n  File \"C:\\Users\\MyUserName\\Desktop\\Ampps\\python\\lib\\site-packages\\pip\\compat\\__init__.py\", line 13, in &lt;module&gt;\n    from pip.compat.dictconfig import dictConfig as logging_dictConfig\n  File \"C:\\Users\\MyUserName\\Desktop\\Ampps\\python\\lib\\site-packages\\pip\\compat\\dictconfig.py\", line 22, in &lt;module&gt;\n    import logging.handlers\n  File \"C:\\Users\\MyUserName\\Desktop\\Ampps\\python\\lib\\logging\\handlers.py\", line 28, in &lt;module&gt;\n    import queue\nImportError: No module named 'queue'\n</code></pre>\n",
+    "tags": [
+      "python",
+      "windows",
+      "python-3.x",
+      "pip",
+      "ampps"
+    ],
+    "votos": 223,
+    "link": "https://stackoverflow.com/questions/37220055/pip-fatal-error-in-launcher-unable-to-create-process-using"
+  },
+  {
+    "titulo": "Re-raise exception with a different type and message, preserving existing information",
+    "pergunta": "<p>I'm writing a module and want to have a unified exception hierarchy for the exceptions that it can raise (e.g. inheriting from a <code>FooError</code> abstract class for all the <code>foo</code> module's specific exceptions). This allows users of the module to catch those particular exceptions and handle them distinctly, if needed. But many of the exceptions raised from the module are raised because of some other exception; e.g. failing at some task because of an OSError on a file.</p>\n\n<p>What I need is to <strong>“wrap” the exception caught such that it has a different type and message</strong>, so that information is available further up the propagation hierarchy by whatever catches the exception. But I don't want to lose the existing type, message, and stack trace; that's all useful information for someone trying to debug the problem. A top-level exception handler is no good, since I'm trying to decorate the exception before it makes its way further up the propagation stack, and the top-level handler is too late.</p>\n\n<p>This is partly solved by deriving my module <code>foo</code>'s specific exception types from the existing type (e.g. <code>class FooPermissionError(OSError, FooError)</code>), but that doesn't make it any easier to wrap the existing exception instance in a new type, nor modify the message.</p>\n\n<p>Python's <a href=\"http://www.python.org/dev/peps/pep-3134/\" rel=\"noreferrer\">PEP 3134</a> “Exception Chaining and Embedded Tracebacks” discusses a change accepted in Python 3.0 for “chaining” exception objects, to indicate that a new exception was raised during the handling of an existing exception.</p>\n\n<p>What I'm trying to do is related: I need it also working in earlier Python versions, and I need it not for chaining, but only for polymorphism. What is the right way to do this?</p>\n",
+    "tags": [
+      "python",
+      "exception",
+      "polymorphism"
+    ],
+    "votos": 221,
+    "link": "https://stackoverflow.com/questions/696047/re-raise-exception-with-a-different-type-and-message-preserving-existing-inform"
+  },
+  {
+    "titulo": "Downloading a picture via urllib and python",
+    "pergunta": "<p>So I'm trying to make a Python script that downloads webcomics and puts them in a folder on my desktop.  I've found a few similar programs on here that do something similar, but nothing quite like what I need.  The one that I found most similar is right here (<a href=\"http://bytes.com/topic/python/answers/850927-problem-using-urllib-download-images\" rel=\"noreferrer\">http://bytes.com/topic/python/answers/850927-problem-using-urllib-download-images</a>).  I tried using this code:</p>\n\n<pre><code>&gt;&gt;&gt; import urllib\n&gt;&gt;&gt; image = urllib.URLopener()\n&gt;&gt;&gt; image.retrieve(\"http://www.gunnerkrigg.com//comics/00000001.jpg\",\"00000001.jpg\")\n('00000001.jpg', &lt;httplib.HTTPMessage instance at 0x1457a80&gt;)\n</code></pre>\n\n<p>I then searched my computer for a file \"00000001.jpg\", but all I found was the cached picture of it.  I'm not even sure it saved the file to my computer.  Once I understand how to get the file downloaded, I think I know how to handle the rest.  Essentially just use a for loop and split the string at the '00000000'.'jpg' and increment the '00000000' up to the largest number, which I would have to somehow determine.  Any reccomendations on the best way to do this or how to download the file correctly?</p>\n\n<p>Thanks!</p>\n\n<p>EDIT 6/15/10</p>\n\n<p>Here is the completed script, it saves the files to any directory you choose.  For some odd reason, the files weren't downloading and they just did.  Any suggestions on how to clean it up would be much appreciated.  I'm currently working out how to find out many comics exist on the site so I can get just the latest one, rather than having the program quit after a certain number of exceptions are raised.</p>\n\n<pre><code>import urllib\nimport os\n\ncomicCounter=len(os.listdir('/file'))+1  # reads the number of files in the folder to start downloading at the next comic\nerrorCount=0\n\ndef download_comic(url,comicName):\n    \"\"\"\n    download a comic in the form of\n\n    url = http://www.example.com\n    comicName = '00000000.jpg'\n    \"\"\"\n    image=urllib.URLopener()\n    image.retrieve(url,comicName)  # download comicName at URL\n\nwhile comicCounter &lt;= 1000:  # not the most elegant solution\n    os.chdir('/file')  # set where files download to\n        try:\n        if comicCounter &lt; 10:  # needed to break into 10^n segments because comic names are a set of zeros followed by a number\n            comicNumber=str('0000000'+str(comicCounter))  # string containing the eight digit comic number\n            comicName=str(comicNumber+\".jpg\")  # string containing the file name\n            url=str(\"http://www.gunnerkrigg.com//comics/\"+comicName)  # creates the URL for the comic\n            comicCounter+=1  # increments the comic counter to go to the next comic, must be before the download in case the download raises an exception\n            download_comic(url,comicName)  # uses the function defined above to download the comic\n            print url\n        if 10 &lt;= comicCounter &lt; 100:\n            comicNumber=str('000000'+str(comicCounter))\n            comicName=str(comicNumber+\".jpg\")\n            url=str(\"http://www.gunnerkrigg.com//comics/\"+comicName)\n            comicCounter+=1\n            download_comic(url,comicName)\n            print url\n        if 100 &lt;= comicCounter &lt; 1000:\n            comicNumber=str('00000'+str(comicCounter))\n            comicName=str(comicNumber+\".jpg\")\n            url=str(\"http://www.gunnerkrigg.com//comics/\"+comicName)\n            comicCounter+=1\n            download_comic(url,comicName)\n            print url\n        else:  # quit the program if any number outside this range shows up\n            quit\n    except IOError:  # urllib raises an IOError for a 404 error, when the comic doesn't exist\n        errorCount+=1  # add one to the error count\n        if errorCount&gt;3:  # if more than three errors occur during downloading, quit the program\n            break\n        else:\n            print str(\"comic\"+ ' ' + str(comicCounter) + ' ' + \"does not exist\")  # otherwise say that the certain comic number doesn't exist\nprint \"all comics are up to date\"  # prints if all comics are downloaded\n</code></pre>\n",
+    "tags": [
+      "python",
+      "urllib2",
+      "urllib"
+    ],
+    "votos": 221,
+    "link": "https://stackoverflow.com/questions/3042757/downloading-a-picture-via-urllib-and-python"
+  },
+  {
+    "titulo": "Mocking a function to raise an Exception to test an except block",
+    "pergunta": "<p>I have a function (<code>foo</code>) which calls another function (<code>bar</code>). If invoking <code>bar()</code> raises an <code>HttpError</code>, I want to handle it specially if the status code is 404, otherwise re-raise.</p>\n\n<p>I am trying to write some unit tests around this <code>foo</code> function, mocking out the call to <code>bar()</code>. Unfortunately, I am unable to get the mocked call to <code>bar()</code> to raise an Exception which is caught by my <code>except</code> block.</p>\n\n<p>Here is my code which illustrates my problem:</p>\n\n<pre><code>import unittest\nimport mock\nfrom apiclient.errors import HttpError\n\n\nclass FooTests(unittest.TestCase):\n    @mock.patch('my_tests.bar')\n    def test_foo_shouldReturnResultOfBar_whenBarSucceeds(self, barMock):\n        barMock.return_value = True\n        result = foo()\n        self.assertTrue(result)  # passes\n\n    @mock.patch('my_tests.bar')\n    def test_foo_shouldReturnNone_whenBarRaiseHttpError404(self, barMock):\n        barMock.side_effect = HttpError(mock.Mock(return_value={'status': 404}), 'not found')\n        result = foo()\n        self.assertIsNone(result)  # fails, test raises HttpError\n\n    @mock.patch('my_tests.bar')\n    def test_foo_shouldRaiseHttpError_whenBarRaiseHttpErrorNot404(self, barMock):\n        barMock.side_effect = HttpError(mock.Mock(return_value={'status': 500}), 'error')\n        with self.assertRaises(HttpError):  # passes\n            foo()\n\ndef foo():\n    try:\n        result = bar()\n        return result\n    except HttpError as error:\n        if error.resp.status == 404:\n            print '404 - %s' % error.message\n            return None\n        raise\n\ndef bar():\n    raise NotImplementedError()\n</code></pre>\n\n<p>I followed the <a href=\"http://www.voidspace.org.uk/python/mock/index.html#quick-guide\" rel=\"noreferrer\">Mock docs</a> which say that you should set the <code>side_effect</code> of a <code>Mock</code> instance to an <code>Exception</code> class to have the mocked function raise the error.</p>\n\n<p>I also looked at some other related StackOverflow Q&amp;As, and it looks like I am doing the same thing they are doing to cause and Exception to be raised by their mock.</p>\n\n<ul>\n<li><a href=\"https://stackoverflow.com/a/10310532/346561\">https://stackoverflow.com/a/10310532/346561</a></li>\n<li><a href=\"https://stackoverflow.com/q/20547038/346561\">How to use Python Mock to raise an exception - but with Errno set to a given value</a></li>\n</ul>\n\n<p>Why is setting the <code>side_effect</code> of <code>barMock</code> not causing the expected <code>Exception</code> to be raised? If I am doing something weird, how should I go about testing logic in my <code>except</code> block?</p>\n",
+    "tags": [
+      "python",
+      "unit-testing",
+      "python-2.7",
+      "mocking",
+      "python-mock"
+    ],
+    "votos": 205,
+    "link": "https://stackoverflow.com/questions/28305406/mocking-a-function-to-raise-an-exception-to-test-an-except-block"
+  },
+  {
+    "titulo": "How to handle exceptions in a list comprehensions?",
+    "pergunta": "<p>I have some a list comprehension in Python in which each iteration can throw an exception.  </p>\n\n<p><strong>For instance</strong>, if I have:</p>\n\n<pre><code>eggs = (1,3,0,3,2)\n\n[1/egg for egg in eggs]\n</code></pre>\n\n<p>I'll get a <code>ZeroDivisionError</code> exception in the 3rd element.</p>\n\n<p>How can I handle this exception and continue execution of the list comprehension?</p>\n\n<p>The only way I can think of is to use a helper function:</p>\n\n<pre><code>def spam(egg):\n    try:\n        return 1/egg\n    except ZeroDivisionError:\n        # handle division by zero error\n        # leave empty for now\n        pass\n</code></pre>\n\n<p>But this looks a bit cumbersome to me.</p>\n\n<p>Is there a better way to do this in Python?</p>\n\n<p><strong>Note:</strong>  This is a simple example (see \"<em>for instance</em>\" above) that I contrived because my real example requires some context.  I'm not interested in avoiding divide by zero errors but in handling exceptions in a list comprehension.</p>\n",
+    "tags": [
+      "python",
+      "exception",
+      "list-comprehension"
+    ],
+    "votos": 198,
+    "link": "https://stackoverflow.com/questions/1528237/how-to-handle-exceptions-in-a-list-comprehensions"
+  }
+]

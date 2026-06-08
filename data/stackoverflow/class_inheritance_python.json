@@ -1,0 +1,128 @@
+[
+  {
+    "titulo": "Understanding Python super() with __init__() methods",
+    "pergunta": "<p>Why is <code>super()</code> used?</p>\n<p>Is there a difference between using <code>Base.__init__</code> and <code>super().__init__</code>?</p>\n<pre><code>class Base(object):\n    def __init__(self):\n        print &quot;Base created&quot;\n        \nclass ChildA(Base):\n    def __init__(self):\n        Base.__init__(self)\n        \nclass ChildB(Base):\n    def __init__(self):\n        super(ChildB, self).__init__()\n        \nChildA() \nChildB()\n</code></pre>\n",
+    "tags": [
+      "python",
+      "class",
+      "oop",
+      "inheritance",
+      "super"
+    ],
+    "votos": 3298,
+    "link": "https://stackoverflow.com/questions/576169/understanding-python-super-with-init-methods"
+  },
+  {
+    "titulo": "Meaning of @classmethod and @staticmethod for a beginner",
+    "pergunta": "<p>What do <code>@classmethod</code> and <code>@staticmethod</code> mean in Python, and how are they different? <em>When</em> should I use them, <em>why</em> should I use them, and <em>how</em> should I use them?</p>\n<p>As far as I understand, <code>@classmethod</code> tells a class that it's a method which should be inherited into subclasses, or... something. However, what's the point of that? Why not just define the class method without adding <code>@classmethod</code> or <code>@staticmethod</code> or any <code>@</code> definitions?</p>\n",
+    "tags": [
+      "python",
+      "oop",
+      "static-methods",
+      "class-method"
+    ],
+    "votos": 2012,
+    "link": "https://stackoverflow.com/questions/12179271/meaning-of-classmethod-and-staticmethod-for-a-beginner"
+  },
+  {
+    "titulo": "What is the best way of implementing a singleton in Python?",
+    "pergunta": "<p>I have multiple classes which would become singletons (my use case is for a logger, but this is not important). I do not wish to clutter several classes with added gumph when I can simply inherit or decorate.</p>\n<p>Best methods:</p>\n<hr />\n<h2>Method 1: A decorator</h2>\n<pre><code>def singleton(class_):\n    instances = {}\n    def getinstance(*args, **kwargs):\n        if class_ not in instances:\n            instances[class_] = class_(*args, **kwargs)\n        return instances[class_]\n    return getinstance\n\n@singleton\nclass MyClass(BaseClass):\n    pass\n</code></pre>\n<p>Pros</p>\n<ul>\n<li>Decorators are additive in a way that is often more intuitive than multiple inheritance.</li>\n</ul>\n<p>Cons</p>\n<ul>\n<li><p>While objects created using <code>MyClass()</code> would be true singleton objects, <code>MyClass</code> itself is a function, not a class, so you cannot call class methods from it. Also for</p>\n<pre class=\"lang-py prettyprint-override\"><code>x = MyClass();\ny = MyClass();\nt = type(n)();\n</code></pre>\n</li>\n</ul>\n<p>then <code>x == y</code> but <code>x != t &amp;&amp; y != t</code></p>\n<hr />\n<h2>Method 2: A base class</h2>\n<pre><code>class Singleton(object):\n    _instance = None\n    def __new__(class_, *args, **kwargs):\n        if not isinstance(class_._instance, class_):\n            class_._instance = object.__new__(class_, *args, **kwargs)\n        return class_._instance\n\nclass MyClass(Singleton, BaseClass):\n    pass\n</code></pre>\n<p>Pros</p>\n<ul>\n<li>It's a true class</li>\n</ul>\n<p>Cons</p>\n<ul>\n<li>Multiple inheritance - eugh! <code>__new__</code> could be overwritten during inheritance from a second base class? One has to think more than is necessary.</li>\n</ul>\n<hr />\n<h2>Method 3: A <a href=\"https://stackoverflow.com/questions/100003/what-is-a-metaclass-in-python\">metaclass</a></h2>\n<pre><code>class Singleton(type):\n    _instances = {}\n    def __call__(cls, *args, **kwargs):\n        if cls not in cls._instances:\n            cls._instances[cls] = super(Singleton, cls).__call__(*args, **kwargs)\n        return cls._instances[cls]\n\n#Python2\nclass MyClass(BaseClass):\n    __metaclass__ = Singleton\n\n#Python3\nclass MyClass(BaseClass, metaclass=Singleton):\n    pass\n</code></pre>\n<p>Pros</p>\n<ul>\n<li>It's a true class</li>\n<li>Auto-magically covers inheritance</li>\n<li>Uses <code>__metaclass__</code> for its proper purpose (and made me aware of it)</li>\n</ul>\n<p>Cons</p>\n<ul>\n<li>Are there any?</li>\n</ul>\n<hr />\n<h2>Method 4: decorator returning a class with the same name</h2>\n<pre><code>def singleton(class_):\n    class class_w(class_):\n        _instance = None\n        def __new__(class_, *args, **kwargs):\n            if class_w._instance is None:\n                class_w._instance = super(class_w,\n                                    class_).__new__(class_,\n                                                    *args,\n                                                    **kwargs)\n                class_w._instance._sealed = False\n            return class_w._instance\n        def __init__(self, *args, **kwargs):\n            if self._sealed:\n                return\n            super(class_w, self).__init__(*args, **kwargs)\n            self._sealed = True\n    class_w.__name__ = class_.__name__\n    return class_w\n\n@singleton\nclass MyClass(BaseClass):\n    pass\n</code></pre>\n<p>Pros</p>\n<ul>\n<li>It's a true class</li>\n<li>Auto-magically covers inheritance</li>\n</ul>\n<p>Cons</p>\n<ul>\n<li>Is there not an overhead for creating each new class? Here we are creating two classes for each class we wish to make a singleton. While this is fine in my case, I worry that this might not scale. Of course there is a matter of debate as to whether it aught to be too easy to scale this pattern...</li>\n<li>What is the point of the <code>_sealed</code> attribute</li>\n<li>Can't call methods of the same name on base classes using <code>super()</code> because they will recurse. This means you can't customize <code>__new__</code> and can't subclass a class that needs you to call up to <code>__init__</code>.</li>\n</ul>\n<hr />\n<h2>Method 5: a module</h2>\n<p>a module file <code>singleton.py</code></p>\n<p>Pros</p>\n<ul>\n<li>Simple is better than complex</li>\n</ul>\n<p>Cons</p>\n<ul>\n<li>Not lazily instantiated</li>\n</ul>\n<p><sub>This question is not for the discussion of whether or not the <a href=\"http://en.wikipedia.org/wiki/Singleton_pattern\" rel=\"noreferrer\">singleton design pattern</a> is desirable, is an anti-pattern, or for any religious wars, but to discuss how this pattern is best implemented in Python in such a way that is most Pythonic. In this instance I define 'most Pythonic' to mean that it follows the 'principle of least astonishment'.</sub></p>\n",
+    "tags": [
+      "python",
+      "singleton",
+      "decorator",
+      "base-class",
+      "metaclass"
+    ],
+    "votos": 1811,
+    "link": "https://stackoverflow.com/questions/6760685/what-is-the-best-way-of-implementing-a-singleton-in-python"
+  },
+  {
+    "titulo": "Why do Python classes inherit object?",
+    "pergunta": "<p>Why does the following class declaration inherit from <code>object</code>?</p>\n<pre><code>class MyClass(object):\n    ...\n</code></pre>\n",
+    "tags": [
+      "python",
+      "class",
+      "oop",
+      "object",
+      "inheritance"
+    ],
+    "votos": 1717,
+    "link": "https://stackoverflow.com/questions/4015417/why-do-python-classes-inherit-object"
+  },
+  {
+    "titulo": "What is a mixin and why is it useful?",
+    "pergunta": "<p>In <a href=\"https://rads.stackoverflow.com/amzn/click/com/0596009259\" rel=\"noreferrer\" rel=\"nofollow noreferrer\"><em>Programming Python</em></a>, Mark Lutz mentions the term <em>mixin</em>. I am from a C/C++/C# background and I have not heard the term before. What is a mixin?</p>\n<p>Reading between the lines of <a href=\"http://books.google.com/books?id=5zYVUIl7F0QC&amp;pg=RA1-PA584&amp;lpg=RA1-PA584&amp;dq=programming+python+guimixin&amp;source=bl&amp;ots=HU833giXzH&amp;sig=jwLpxSp4m_VbOYQ897UDkGNx_2U&amp;hl=en&amp;ei=x8iRSaTTF5iq-ganpbGPCw&amp;sa=X&amp;oi=book_result&amp;resnum=3&amp;ct=result\" rel=\"noreferrer\">this example</a> (which I have linked to because it is quite long), I am presuming it is a case of using multiple inheritance to extend a class as opposed to proper subclassing. Is this right?</p>\n<p>Why would I want to do that rather than put the new functionality into a subclass? For that matter, why would a mixin/multiple inheritance approach be better than using composition?</p>\n<p>What separates a mixin from multiple inheritance? Is it just a matter of semantics?</p>\n",
+    "tags": [
+      "python",
+      "oop",
+      "multiple-inheritance",
+      "mixins",
+      "python-class"
+    ],
+    "votos": 1413,
+    "link": "https://stackoverflow.com/questions/533631/what-is-a-mixin-and-why-is-it-useful"
+  },
+  {
+    "titulo": "How do I call a parent class&#39;s method from a child class in Python?",
+    "pergunta": "<p>When creating a simple object hierarchy in Python, I'd like to be able to invoke methods of the parent class from a derived class.  In Perl and Java, there is a keyword for this (<a href=\"https://docs.oracle.com/javase/tutorial/java/IandI/super.html\" rel=\"noreferrer\"><code>super</code></a>).  In Perl, I might do this:</p>\n\n<pre><code>package Foo;\n\nsub frotz {\n    return \"Bamf\";\n}\n\npackage Bar;\n@ISA = qw(Foo);\n\nsub frotz {\n   my $str = SUPER::frotz();\n   return uc($str);\n}\n</code></pre>\n\n<p>In Python, it appears that I have to name the parent class explicitly from the child.\nIn the example above, I'd have to do something like <code>Foo::frotz()</code>.  </p>\n\n<p>This doesn't seem right since this behavior makes it hard to make deep hierarchies.  If children need to know what class defined an inherited method, then all sorts of information pain is created.  </p>\n\n<p>Is this an actual limitation in python, a gap in my understanding or both?</p>\n",
+    "tags": [
+      "python",
+      "class",
+      "oop",
+      "object",
+      "inheritance"
+    ],
+    "votos": 844,
+    "link": "https://stackoverflow.com/questions/805066/how-do-i-call-a-parent-classs-method-from-a-child-class-in-python"
+  },
+  {
+    "titulo": "How to invoke the super constructor in Python?",
+    "pergunta": "<pre><code>class A:\n    def __init__(self):\n        print(\"world\")\n\nclass B(A):\n    def __init__(self):\n       print(\"hello\")\n\nB()  # output: hello\n</code></pre>\n\n<p>In all other languages I've worked with the super constructor is invoked implicitly. How does one invoke it in Python? I would expect <code>super(self)</code> but this doesn't work.</p>\n",
+    "tags": [
+      "python",
+      "class",
+      "inheritance",
+      "constructor",
+      "superclass"
+    ],
+    "votos": 537,
+    "link": "https://stackoverflow.com/questions/2399307/how-to-invoke-the-super-constructor-in-python"
+  },
+  {
+    "titulo": "Is it possible to make abstract classes in Python?",
+    "pergunta": "<p>How can I make a class or method abstract in Python?</p>\n<p>I tried redefining <code>__new__()</code> like so:</p>\n<pre><code>class F:\n    def __new__(cls):\n        raise Exception(&quot;Unable to create an instance of abstract class %s&quot; %cls)\n</code></pre>\n<p>But now, if I create a class <code>G</code> that inherits from <code>F</code> like so:</p>\n<pre><code>class G(F):\n    pass\n</code></pre>\n<p>Then, I can't instantiate <code>G</code> either, since it calls its super class's <code>__new__</code> method.</p>\n<p>Is there a better way to define an abstract class?</p>\n",
+    "tags": [
+      "python",
+      "class",
+      "inheritance",
+      "abstract-class",
+      "abstract"
+    ],
+    "votos": 461,
+    "link": "https://stackoverflow.com/questions/13646245/is-it-possible-to-make-abstract-classes-in-python"
+  },
+  {
+    "titulo": "What&#39;s the best way to generate a UML diagram from Python source code?",
+    "pergunta": "<p>A colleague is looking to generate UML class diagrams from heaps of Python source code. \nHe's primarily interested in the inheritance relationships, and mildly interested in compositional relationships, and doesn't care much about class attributes that are just Python primitives.</p>\n\n<p>The source code is pretty straightforward and not tremendously evil--it doesn't do any fancy metaclass magic, for example.  (It's mostly from the days of Python 1.5.2, with some sprinklings of \"modern\" 2.3ish stuff.)  </p>\n\n<p>What's the best existing solution to recommend?</p>\n",
+    "tags": [
+      "python",
+      "uml",
+      "diagram"
+    ],
+    "votos": 410,
+    "link": "https://stackoverflow.com/questions/260165/whats-the-best-way-to-generate-a-uml-diagram-from-python-source-code"
+  },
+  {
+    "titulo": "How does asyncio actually work?",
+    "pergunta": "<p>This question is motivated by my another question: <a href=\"https://stackoverflow.com/questions/48989065/how-to-await-in-cdef\">How to await in cdef?</a></p>\n\n<p>There are tons of articles and blog posts on the web about <code>asyncio</code>, but they are all very superficial.  I couldn't find any information about how <code>asyncio</code> is actually implemented, and what makes I/O asynchronous.  I was trying to read the source code, but it's thousands of lines of not the highest grade C code, a lot of which deals with auxiliary objects, but most crucially, it is hard to connect between Python syntax and what C code it would translate into.</p>\n\n<p>Asycnio's own documentation is even less helpful.  There's no information there about how it works, only some guidelines about how to use it, which are also sometimes misleading / very poorly written.</p>\n\n<p>I'm familiar with Go's implementation of coroutines, and was kind of hoping that Python did the same thing.  If that was the case, the code I came up in the post linked above would have worked.  Since it didn't, I'm now trying to figure out why.  My best guess so far is as follows, please correct me where I'm wrong:</p>\n\n<ol>\n<li>Procedure definitions of the form <code>async def foo(): ...</code> are actually interpreted as methods of a class inheriting <code>coroutine</code>.</li>\n<li>Perhaps, <code>async def</code> is actually split into multiple methods by <code>await</code> statements, where the object, on which these methods are called is able to keep track of the progress it made through the execution so far.</li>\n<li>If the above is true, then, essentially, execution of a coroutine boils down to calling methods of coroutine object by some global manager (loop?).</li>\n<li>The global manager is somehow (how?) aware of when I/O operations are performed by Python (only?) code and is able to choose one of the pending coroutine methods to execute after the current executing method relinquished control (hit on the <code>await</code> statement).</li>\n</ol>\n\n<p>In other words, here's my attempt at \"desugaring\" of some <code>asyncio</code> syntax into something more understandable:</p>\n\n<pre><code>async def coro(name):\n    print('before', name)\n    await asyncio.sleep()\n    print('after', name)\n\nasyncio.gather(coro('first'), coro('second'))\n\n# translated from async def coro(name)\nclass Coro(coroutine):\n    def before(self, name):\n        print('before', name)\n\n    def after(self, name):\n        print('after', name)\n\n    def __init__(self, name):\n        self.name = name\n        self.parts = self.before, self.after\n        self.pos = 0\n\n    def __call__():\n        self.parts[self.pos](self.name)\n        self.pos += 1\n\n    def done(self):\n        return self.pos == len(self.parts)\n\n\n# translated from asyncio.gather()\nclass AsyncIOManager:\n\n    def gather(*coros):\n        while not every(c.done() for c in coros):\n            coro = random.choice(coros)\n            coro()\n</code></pre>\n\n<p>Should my guess prove correct: then I have a problem.  How does I/O actually happen in this scenario? In a separate thread?  Is the whole interpreter suspended and I/O happens outside the interpreter?  What exactly is meant by I/O?  If my python procedure called C <code>open()</code> procedure, and it in turn sent interrupt to kernel, relinquishing control to it, how does Python interpreter know about this and is able to continue running some other code, while kernel code does the actual I/O and until it wakes up the Python procedure which sent the interrupt originally?  How can Python interpreter in principle, be aware of this happening?</p>\n",
+    "tags": [
+      "python",
+      "python-3.x",
+      "python-asyncio",
+      "python-internals"
+    ],
+    "votos": 388,
+    "link": "https://stackoverflow.com/questions/49005651/how-does-asyncio-actually-work"
+  }
+]

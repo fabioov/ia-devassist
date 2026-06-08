@@ -1,0 +1,117 @@
+[
+  {
+    "titulo": "Use different Python version with virtualenv",
+    "pergunta": "<p>How do I create a virtual environment for a specified version of Python?</p>\n",
+    "tags": [
+      "python",
+      "virtualenv",
+      "virtualenvwrapper"
+    ],
+    "votos": 1882,
+    "link": "https://stackoverflow.com/questions/1534210/use-different-python-version-with-virtualenv"
+  },
+  {
+    "titulo": "How do I check which version of Python is running my script?",
+    "pergunta": "<p>How do I check which version of the Python interpreter is running my script?</p>\n<hr />\n<p><sub> See <a href=\"https://stackoverflow.com/questions/2589711\">Find full path of the Python interpreter (Python executable)?</a> if you are looking to find exactly <em>which interpreter</em> is being used - for example, to debug a Pip installation problem, or to check which virtual environment (if any) is active. </sub></p>\n",
+    "tags": [
+      "python",
+      "version"
+    ],
+    "votos": 1504,
+    "link": "https://stackoverflow.com/questions/1093322/how-do-i-check-which-version-of-python-is-running-my-script"
+  },
+  {
+    "titulo": "How do I solve &quot;error: externally-managed-environment&quot; every time I use pip 3?",
+    "pergunta": "<p>When I run <code>pip install xyz</code> on a Linux machine (using <a href=\"https://en.wikipedia.org/wiki/Debian\" rel=\"noreferrer\">Debian</a> or <a href=\"https://en.wikipedia.org/wiki/Ubuntu_%28operating_system%29\" rel=\"noreferrer\">Ubuntu</a> or a derived Linux distribution), I get this error:</p>\n<blockquote>\n<pre class=\"lang-none prettyprint-override\"><code>error: externally-managed-environment\n\n× This environment is externally managed\n╰─&gt; To install Python packages system-wide, try apt install\n    python3-xyz, where xyz is the package you are trying to\n    install.\n\n    If you wish to install a non-Debian-packaged Python package,\n    create a virtual environment using python3 -m venv path/to/venv.\n    Then use path/to/venv/bin/python and path/to/venv/bin/pip. Make\n    sure you have python3-full installed.\n\n    If you wish to install a non-Debian packaged Python application,\n    it may be easiest to use pipx install xyz, which will manage a\n    virtual environment for you. Make sure you have pipx installed.\n\n    See /usr/share/doc/python3.11/README.venv for more information.\n\nnote: If you believe this is a mistake, please contact your Python installation or OS distribution provider. You can override this, at the risk of breaking your Python installation or OS, by passing --break-system-packages.\nhint: See PEP 668 for the detailed specification.\n</code></pre>\n</blockquote>\n<p>What does this error mean? How do I avoid it? Why doesn't <code>pip install xyz</code> work like it did before I upgraded my system using <code>sudo apt upgrade</code>?</p>\n",
+    "tags": [
+      "python",
+      "pip",
+      "debian",
+      "failed-installation"
+    ],
+    "votos": 1048,
+    "link": "https://stackoverflow.com/questions/75608323/how-do-i-solve-error-externally-managed-environment-every-time-i-use-pip-3"
+  },
+  {
+    "titulo": "Upgrade Python in a virtual environment",
+    "pergunta": "<p>Is there a way to upgrade the version of Python used in a <em>virtual environment</em> (e.g., if a bugfix release comes out)?</p>\n<p>I could <code>pip freeze --local &gt; requirements.txt</code>, remove the directory, and <code>pip install -r requirements.txt</code>, but this requires a lot of reinstallation of large libraries, for instance, <a href=\"https://en.wikipedia.org/wiki/NumPy\" rel=\"noreferrer\">NumPy</a>, which I use a lot.</p>\n<p>I can see this is an advantage when upgrading from, e.g., 2.6 -&gt; 2.7, but what about 2.7.x -&gt; 2.7.y?</p>\n",
+    "tags": [
+      "python",
+      "pip",
+      "virtualenv",
+      "version",
+      "requirements"
+    ],
+    "votos": 402,
+    "link": "https://stackoverflow.com/questions/10218946/upgrade-python-in-a-virtual-environment"
+  },
+  {
+    "titulo": "How can I activate a virtualenv in Linux?",
+    "pergunta": "<p>I have been searching and trying various alternatives, and spent several days on it without success.</p>\n<p>I am running on <a href=\"https://en.wikipedia.org/wiki/Red_Hat_Linux\" rel=\"nofollow noreferrer\">Red Hat Linux</a> with Python 2.5.2.\nI began using the most recent Virtualenv, but I could not activate it. I found I needed an earlier version, so I have used Virtualenv 1.6.4, as that should work with Python 2.6.</p>\n<h2>It seems to install the virtual environment ok</h2>\n<pre class=\"lang-none prettyprint-override\"><code>python virtualenv-1.6.4/virtualenv.py virtual\n</code></pre>\n<p>Output:</p>\n<pre class=\"lang-none prettyprint-override\"><code>New python executable in virtual/bin/python\nInstalling setuptools............done.\nInstalling pip...............done.\n</code></pre>\n<h2>The environment looks ok</h2>\n<pre class=\"lang-none prettyprint-override\"><code>cd virtual\ndir\n</code></pre>\n<p>Output:</p>\n<pre class=\"lang-none prettyprint-override\"><code>bin  include  lib\n</code></pre>\n<h2>Trying to activate</h2>\n<pre class=\"lang-none prettyprint-override\"><code>. bin/activate\n</code></pre>\n<p>Output:</p>\n<pre class=\"lang-none prettyprint-override\"><code>/bin/.: Permission denied.\n</code></pre>\n<h2>I checked chmod</h2>\n<pre class=\"lang-none prettyprint-override\"><code>cd bin\nls -l\n</code></pre>\n<p>Output:</p>\n<pre class=\"lang-none prettyprint-override\"><code>total 3160\n -rw-r--r--    1 necrailk biz12        2130 Jan 30 11:38 activate\n -rw-r--r--    1 necrailk biz12        1050 Jan 30 11:38 activate.csh\n -rw-r--r--    1 necrailk biz12        2869 Jan 30 11:38 activate.fish\n -rw-r--r-\n</code></pre>\n<h2>It was a problem, so I changed it</h2>\n<pre class=\"lang-none prettyprint-override\"><code>ls -l\n</code></pre>\n<p>Output:</p>\n<pre class=\"lang-none prettyprint-override\"><code>total 3160\n-rwxr--r--    1 necrailk biz12        2130 Jan 30 11:38 activate\n-rw-r--r--    1 necrailk biz12        1050 Jan 30 11:38 activate.csh\n-rw-r--r--    1 necrailk biz12        2869 Jan 30 11:38 activate.fish\n-rw-r--r--    1 necrailk biz12        1005 Jan 30 11:38 activate_this.py\n-rwxr-xr-x    1 necrailk biz\n</code></pre>\n<h2>Trying <code>activate</code> again</h2>\n<pre class=\"lang-none prettyprint-override\"><code>. bin/activate\n</code></pre>\n<p>Output:</p>\n<pre class=\"lang-none prettyprint-override\"><code>/bin/.: Permission denied.\n</code></pre>\n<p>Still nothing</p>\n",
+    "tags": [
+      "python",
+      "virtualenv",
+      "python-venv",
+      "python-2.5"
+    ],
+    "votos": 388,
+    "link": "https://stackoverflow.com/questions/14604699/how-can-i-activate-a-virtualenv-in-linux"
+  },
+  {
+    "titulo": "Pylint &quot;unresolved import&quot; error in Visual Studio Code",
+    "pergunta": "<p>I am using the following setup</p>\n<ul>\n<li><a href=\"https://en.wikipedia.org/wiki/MacOS_Mojave\" rel=\"noreferrer\">macOS v10.14</a> (Mojave)</li>\n<li>Python 3.7.1</li>\n<li>Visual Studio Code 1.30</li>\n<li>Pylint 2.2.2</li>\n<li>Django 2.1.4</li>\n</ul>\n<p>I want to use linting to make my life a bit easier in Visual Studio Code. However, for every import I have states &quot;unresolved import&quot;. Even on default Django imports (i.e. from django.db import models).</p>\n<p>I presume it is because it is not seeing the virtual environment Python files.</p>\n<p>Everything works just fine, but it's starting to get annoying.</p>\n<p>The interpreter choices I have are all system versions of Python. It does not seem to see my virtual environment Python at all (it is not in the same directory as my workspace, so that part makes sense).</p>\n<p>If I set up the <em>python.PythonPath</em> in the <em>settings.json</em> file, it just ignores it and does not list my virtual environment path as an option. I also tried setting it up in my global Python settings, but it also does not show up.</p>\n<p>Is there a quick fix to get it working?</p>\n",
+    "tags": [
+      "python",
+      "django",
+      "visual-studio-code",
+      "pylint"
+    ],
+    "votos": 263,
+    "link": "https://stackoverflow.com/questions/53939751/pylint-unresolved-import-error-in-visual-studio-code"
+  },
+  {
+    "titulo": "How can I set up a virtual environment for Python in Visual Studio Code?",
+    "pergunta": "<p>In my project folder I created a <em>venv</em> folder:</p>\n<pre><code>python -m venv venv\n</code></pre>\n<p>When I run command <code>select python interpreter</code> in Visual Studio Code, my venv folder is not shown. I went one level up like suggested <a href=\"https://github.com/Microsoft/vscode-python/issues/2470\" rel=\"noreferrer\">here</a>, but Visual Studio Code doesn't see my virtual interpreter.</p>\n<p>What did I miss?</p>\n",
+    "tags": [
+      "python",
+      "visual-studio-code",
+      "virtualenv"
+    ],
+    "votos": 263,
+    "link": "https://stackoverflow.com/questions/54106071/how-can-i-set-up-a-virtual-environment-for-python-in-visual-studio-code"
+  },
+  {
+    "titulo": "AttributeError: module &#39;pkgutil&#39; has no attribute &#39;ImpImporter&#39;. Did you mean: &#39;zipimporter&#39;?",
+    "pergunta": "<p>Earlier I installed some packages like <a href=\"https://en.wikipedia.org/wiki/Matplotlib\" rel=\"noreferrer\">Matplotlib</a>, <a href=\"https://en.wikipedia.org/wiki/NumPy\" rel=\"noreferrer\">NumPy</a>, pip (version 23.3.1), wheel (version 0.41.2), etc., and did some programming with those. I used the command <code>C:\\Users\\UserName&gt;pip list</code> to find the list of packages that I have installed, and I am using Python 3.12.0 (by employing code <code>C:\\Users\\UserName&gt;py -V</code>).</p>\n<p>I need to use <a href=\"https://github.com/spedas/pyspedas\" rel=\"noreferrer\">pyspedas</a> to analyse some data. I am following the instruction that that I received from site to install the package, with a variation (I am not sure whether it matters or not: I am using <code>py</code>, instead of <code>python</code>). The commands that I use, in the order, are:</p>\n<pre class=\"lang-none prettyprint-override\"><code>py -m venv pyspedas\n.\\pyspedas\\Scripts\\activate\npip install pyspedas\n</code></pre>\n<p>After the last step, I am getting the following output:</p>\n<pre class=\"lang-none prettyprint-override\"><code>Collecting pyspedas\n  Using cached pyspedas-1.4.47-py3-none-any.whl.metadata (14 kB)\nCollecting numpy&gt;=1.19.5 (from pyspedas)\n  Using cached numpy-1.26.1-cp312-cp312-win_amd64.whl.metadata (61 kB)\nCollecting requests (from pyspedas)\n  Using cached requests-2.31.0-py3-none-any.whl.metadata (4.6 kB)\nCollecting geopack&gt;=1.0.10 (from pyspedas)\n  Using cached geopack-1.0.10-py3-none-any.whl (114 kB)\nCollecting cdflib&lt;1.0.0 (from pyspedas)\n  Using cached cdflib-0.4.9-py3-none-any.whl (72 kB)\nCollecting cdasws&gt;=1.7.24 (from pyspedas)\n  Using cached cdasws-1.7.43.tar.gz (21 kB)\n  Installing build dependencies ... done\n  Getting requirements to build wheel ... done\n  Preparing metadata (pyproject.toml) ... done\nCollecting netCDF4&gt;=1.6.2 (from pyspedas)\n  Using cached netCDF4-1.6.5-cp312-cp312-win_amd64.whl.metadata (1.8 kB)\nCollecting pywavelets (from pyspedas)\n  Using cached PyWavelets-1.4.1.tar.gz (4.6 MB)\n  Installing build dependencies ... done\n  Getting requirements to build wheel ... error\n  error: subprocess-exited-with-error\n\n  × Getting requirements to build wheel did not run successfully.\n  │ exit code: 1\n  ╰─&gt; [33 lines of output]\n      Traceback (most recent call last):\n        File &quot;C:\\Users\\UserName\\pyspedas\\Lib\\site-packages\\pip\\_vendor\\pyproject_hooks\\_in_process\\_in_process.py&quot;, line 353, in &lt;module&gt;\n          main()\n        File &quot;C:\\Users\\UserName\\pyspedas\\Lib\\site-packages\\pip\\_vendor\\pyproject_hooks\\_in_process\\_in_process.py&quot;, line 335, in main\n          json_out['return_val'] = hook(**hook_input['kwargs'])\n                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n        File &quot;C:\\Users\\UserName\\pyspedas\\Lib\\site-packages\\pip\\_vendor\\pyproject_hooks\\_in_process\\_in_process.py&quot;, line 112, in get_requires_for_build_wheel\n          backend = _build_backend()\n                    ^^^^^^^^^^^^^^^^\n        File &quot;C:\\Users\\UserName\\pyspedas\\Lib\\site-packages\\pip\\_vendor\\pyproject_hooks\\_in_process\\_in_process.py&quot;, line 77, in _build_backend\n          obj = import_module(mod_path)\n                ^^^^^^^^^^^^^^^^^^^^^^^\n        File &quot;C:\\Users\\UserName\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\importlib\\__init__.py&quot;, line 90, in import_module\n          return _bootstrap._gcd_import(name[level:], package, level)\n                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n        File &quot;&lt;frozen importlib._bootstrap&gt;&quot;, line 1381, in _gcd_import\n        File &quot;&lt;frozen importlib._bootstrap&gt;&quot;, line 1354, in _find_and_load\n        File &quot;&lt;frozen importlib._bootstrap&gt;&quot;, line 1304, in _find_and_load_unlocked\n        File &quot;&lt;frozen importlib._bootstrap&gt;&quot;, line 488, in _call_with_frames_removed\n        File &quot;&lt;frozen importlib._bootstrap&gt;&quot;, line 1381, in _gcd_import\n        File &quot;&lt;frozen importlib._bootstrap&gt;&quot;, line 1354, in _find_and_load\n        File &quot;&lt;frozen importlib._bootstrap&gt;&quot;, line 1325, in _find_and_load_unlocked\n        File &quot;&lt;frozen importlib._bootstrap&gt;&quot;, line 929, in _load_unlocked\n        File &quot;&lt;frozen importlib._bootstrap_external&gt;&quot;, line 994, in exec_module\n        File &quot;&lt;frozen importlib._bootstrap&gt;&quot;, line 488, in _call_with_frames_removed\n        File &quot;C:\\Users\\UserName\\AppData\\Local\\Temp\\pip-build-env-_lgbq70y\\overlay\\Lib\\site-packages\\setuptools\\__init__.py&quot;, line 16, in &lt;module&gt;\n          import setuptools.version\n        File &quot;C:\\Users\\UserName\\AppData\\Local\\Temp\\pip-build-env-_lgbq70y\\overlay\\Lib\\site-packages\\setuptools\\version.py&quot;, line 1, in &lt;module&gt;\n          import pkg_resources\n        File &quot;C:\\Users\\UserName\\AppData\\Local\\Temp\\pip-build-env-_lgbq70y\\overlay\\Lib\\site-packages\\pkg_resources\\__init__.py&quot;, line 2191, in &lt;module&gt;\n          register_finder(pkgutil.ImpImporter, find_on_path)\n                          ^^^^^^^^^^^^^^^^^^^\n      AttributeError: module 'pkgutil' has no attribute 'ImpImporter'. Did you mean: 'zipimporter'?\n      [end of output]\n\n  note: This error originates from a subprocess, and is likely not a problem with pip.\nerror: subprocess-exited-with-error\n\n× Getting requirements to build wheel did not run successfully.\n│ exit code: 1\n╰─&gt; See above for output.\n\nnote: This error originates from a subprocess, and is likely not a problem with pip.\n</code></pre>\n<p>After little bit of googling, I came to know that this issues was reported at multiple places, but none for this package. I did install wheel in the new environment as mentioned in the answer <a href=\"https://stackoverflow.com/a/56504270/6323020\">here</a>, but the problem still persists.</p>\n<p>Instead of setting up a virtual environment, I simply executed the command <code>py -m pip install pyspedas</code>. But I am still getting the error.</p>\n<p>What I could gather is that the program has an issue with</p>\n<pre class=\"lang-none prettyprint-override\"><code>Collecting pywavelets (from pyspedas)\n  Using cached PyWavelets-1.4.1.tar.gz (4.6 MB)\n  Installing build dependencies ... done\n</code></pre>\n<p>I am using <a href=\"https://en.wikipedia.org/wiki/IDLE\" rel=\"noreferrer\">IDLE</a> in Windows 11.</p>\n",
+    "tags": [
+      "python",
+      "python-3.x",
+      "numpy",
+      "pip"
+    ],
+    "votos": 250,
+    "link": "https://stackoverflow.com/questions/77364550/attributeerror-module-pkgutil-has-no-attribute-impimporter-did-you-mean"
+  },
+  {
+    "titulo": "What&#39;s the difference between Docker and Python virtualenv?",
+    "pergunta": "<p>From what I understand about Docker, it's a tool used for virtual environments. In their lingo, its called \"containerization\". This is more or less what Python's virtualenv does. However, you can use virtualenv <em>in</em> Docker. So, is it a virtual environment inside a virtual environment? I'm confused as to how this would even work, so could someone please clarify?</p>\n",
+    "tags": [
+      "python",
+      "docker",
+      "virtualenv"
+    ],
+    "votos": 222,
+    "link": "https://stackoverflow.com/questions/50974960/whats-the-difference-between-docker-and-python-virtualenv"
+  },
+  {
+    "titulo": "VSCode doesn&#39;t show poetry virtualenvs in select interpreter option",
+    "pergunta": "<p>I need help. VSCode will NEVER find poetry virtualenv interpreter no matter what I try. </p>\n\n<p>Installed poetry Python package manager using a standard <code>$ curl</code> method as explained <a href=\"https://python-poetry.org/docs/#installation\" rel=\"noreferrer\">in the official documentation</a>. </p>\n\n<p>Started a project by <code>$ poetry new finance-essentials_37-64</code>, installed poetry environment with <code>$ poetry install</code>. </p>\n\n<p>So now I can see that I indeed have a virtual environment by:</p>\n\n<pre><code>Jaepil@Jaepil-PC MINGW64 /e/VSCodeProjects/finance_essentials_37-64 $ poetry env list \n&gt;&gt; finance-essentials-37-64-SCQrHB_N-py3.7 (Activated)\n</code></pre>\n\n<p>and this virtualenv is installed at: <code>C:\\Users\\Jaepil\\AppData\\Local\\pypoetry\\Cache\\virtualenvs</code>, which has <code>finance-essentials-37-64-SCQrHB_N-py3.7</code> directory. </p>\n\n<p>However, VSCode is unable to find this virtualenv in its 'select interpreter' command. I only see a bunch of Anaconda and Pipenv environments but not the poetry environment's interpreter that I've just made. </p>\n\n<p>I also added <code>\"python.venvPath\": \"~/.cache/pypoetry/virtualenvs\",</code> to my <code>settings.json</code> as suggested in <a href=\"https://github.com/microsoft/vscode-python/issues/8372#issuecomment-556984062\" rel=\"noreferrer\">here</a>, but to no avail. \nStill doesn't work. </p>\n\n<p>I also tried an absolute path, by adding <code>\"python.venvPath\": \"C:\\\\Users\\\\Jaepil\\\\AppData\\\\Local\\\\pypoetry\\\\Cache\\\\virtualenvs\",</code> to the same settings, but it also doesn't work. </p>\n\n<p><a href=\"https://code.visualstudio.com/docs/python/settings-reference\" rel=\"noreferrer\">VSCode settings reference</a> states that it has <code>python.poetryPath</code> as a default but it doesn't seem to work either. Should I change the default value <code>\"poetry\"</code> in this case? </p>\n\n<blockquote>\n  <p>python.poetryPath </p>\n  \n  <p>\"poetry\"</p>\n  \n  <p>Specifies the location of the Poetry dependency manager executable, if\n  installed. The default value \"poetry\" assumes the executable is in the\n  current path. The Python extension uses this setting to install\n  packages when Poetry is available and there's a poetry.lock file in\n  the workspace folder.</p>\n</blockquote>\n\n<p>I'm on Windows 10 pro 64bit &amp; Has Python 3.7.6 installed on the system. </p>\n\n<pre><code>PS C:\\Users\\Jaepil&gt; python\nPython 3.7.6 (tags/v3.7.6:43364a7ae0, Dec 19 2019, 00:42:30) [MSC v.1916 64 bit (AMD64)] on win32\n</code></pre>\n",
+    "tags": [
+      "python",
+      "visual-studio-code",
+      "python-poetry"
+    ],
+    "votos": 207,
+    "link": "https://stackoverflow.com/questions/59882884/vscode-doesnt-show-poetry-virtualenvs-in-select-interpreter-option"
+  }
+]

@@ -1,0 +1,113 @@
+[
+  {
+    "titulo": "if/else in a list comprehension",
+    "pergunta": "<p>How do I convert the following <code>for</code>-loop containing an <code>if</code>/<code>else</code> into a list comprehension?</p>\n<pre><code>results = []\nfor x in xs:\n    results.append(f(x) if x is not None else '')\n</code></pre>\n<p>It should yield <code>''</code> if <code>x</code> is <code>None</code>, and otherwise <code>f(x)</code>.\nI tried:</p>\n<pre><code>[f(x) for x in xs if x is not None else '']\n</code></pre>\n<p>but it gives a <code>SyntaxError</code>. What is the correct syntax?</p>\n<hr />\n<p><sub>See <a href=\"https://stackoverflow.com/questions/394809/\">Does Python have a ternary conditional operator?</a> for info on <code>... if ... else ...</code>.</sub><br />\n<sub>See <a href=\"https://stackoverflow.com/questions/24442091\">List comprehension with condition</a> for <em>omitting</em> values based on a condition: <code>[... for x in xs if x cond]</code>.</sub><br />\n<sub>See <a href=\"https://stackoverflow.com/questions/9987483\">`elif` in list comprehension conditionals</a> for <code>elif</code>.</sub></p>\n",
+    "tags": [
+      "python",
+      "list",
+      "if-statement",
+      "list-comprehension"
+    ],
+    "votos": 1749,
+    "link": "https://stackoverflow.com/questions/4260280/if-else-in-a-list-comprehension"
+  },
+  {
+    "titulo": "Hidden features of Python",
+    "pergunta": "<p>What are the lesser-known but useful features of the Python programming language?</p>\n<ul>\n<li>Try to limit answers to Python core.</li>\n<li>One feature per answer.</li>\n<li>Give an example and short description of the feature, not just a link to documentation.</li>\n<li>Label the feature using a title as the first line.</li>\n</ul>\n<h2>Quick links to answers:</h2>\n<ul>\n<li><a href=\"https://stackoverflow.com/questions/101268/hidden-features-of-python#111176\">Argument Unpacking</a></li>\n<li><a href=\"https://stackoverflow.com/questions/101268/hidden-features-of-python#112303\">Braces</a></li>\n<li><a href=\"https://stackoverflow.com/questions/101268/hidden-features-of-python#101945\">Chaining Comparison Operators</a></li>\n<li><a href=\"https://stackoverflow.com/questions/101268/hidden-features-of-python#101447\">Decorators</a></li>\n<li><a href=\"https://stackoverflow.com/questions/101268/hidden-features-of-python#113198\">Default Argument Gotchas / Dangers of Mutable Default arguments</a></li>\n<li><a href=\"https://stackoverflow.com/questions/101268/hidden-features-of-python#102062\">Descriptors</a></li>\n<li><a href=\"https://stackoverflow.com/questions/101268/hidden-features-of-python#111970\">Dictionary default <code>.get</code> value</a></li>\n<li><a href=\"https://stackoverflow.com/questions/101268/hidden-features-of-python#102065\">Docstring Tests</a></li>\n<li><a href=\"https://stackoverflow.com/questions/101268/hidden-features-of-python/112316#112316\">Ellipsis Slicing Syntax</a></li>\n<li><a href=\"https://stackoverflow.com/questions/101268/hidden-features-of-python#117116\">Enumeration</a></li>\n<li><a href=\"https://stackoverflow.com/questions/101268/hidden-features-of-python#114420\">For/else</a></li>\n<li><a href=\"https://stackoverflow.com/questions/101268/hidden-features-of-python#102202\">Function as iter() argument</a></li>\n<li><a href=\"https://stackoverflow.com/questions/101268/hidden-features-of-python#101310\">Generator expressions</a></li>\n<li><a href=\"https://stackoverflow.com/questions/101268/hidden-features-of-python#101276\"><code>import this</code></a></li>\n<li><a href=\"https://stackoverflow.com/questions/101268/hidden-features-of-python#102037\">In Place Value Swapping</a></li>\n<li><a href=\"https://stackoverflow.com/questions/101268/hidden-features-of-python#101840\">List stepping</a></li>\n<li><a href=\"https://stackoverflow.com/questions/101268/hidden-features-of-python#112286\"><code>__missing__</code> items</a></li>\n<li><a href=\"https://stackoverflow.com/questions/101268/hidden-features-of-python#101537\">Multi-line Regex</a></li>\n<li><a href=\"https://stackoverflow.com/questions/101268/hidden-features-of-python#113164\">Named string formatting</a></li>\n<li><a href=\"https://stackoverflow.com/questions/101268/hidden-features-of-python#101549\">Nested list/generator comprehensions</a></li>\n<li><a href=\"https://stackoverflow.com/questions/101268/hidden-features-of-python#108297\">New types at runtime</a></li>\n<li><a href=\"https://stackoverflow.com/questions/101268/hidden-features-of-python#113833\"><code>.pth</code> files</a></li>\n<li><a href=\"https://stackoverflow.com/questions/101268/hidden-features-of-python#1024693\">ROT13 Encoding</a></li>\n<li><a href=\"https://stackoverflow.com/questions/101268/hidden-features-of-python#143636\">Regex Debugging</a></li>\n<li><a href=\"https://stackoverflow.com/questions/101268/hidden-features-of-python#101739\">Sending to Generators</a></li>\n<li><a href=\"https://stackoverflow.com/questions/101268/hidden-features-of-python#168270\">Tab Completion in Interactive Interpreter</a></li>\n<li><a href=\"https://stackoverflow.com/questions/101268/hidden-features-of-python#116480\">Ternary Expression</a></li>\n<li><a href=\"https://stackoverflow.com/questions/101268/hidden-features-of-python#114157\"><code>try/except/else</code></a></li>\n<li><a href=\"https://stackoverflow.com/questions/101268/hidden-features-of-python#3267903\">Unpacking+<code>print()</code> function</a></li>\n<li><a href=\"https://stackoverflow.com/questions/101268/hidden-features-of-python#109182\"><code>with</code> statement</a></li>\n</ul>\n",
+    "tags": [
+      "python",
+      "hidden-features"
+    ],
+    "votos": 1414,
+    "link": "https://stackoverflow.com/questions/101268/hidden-features-of-python"
+  },
+  {
+    "titulo": "List comprehension vs map",
+    "pergunta": "<p>Is there a reason to prefer using <a href=\"https://docs.python.org/3.8/library/functions.html#map\" rel=\"noreferrer\">map()</a> over list comprehension or vice versa?  Is either of them generally more efficient or considered generally more Pythonic than the other?</p>\n",
+    "tags": [
+      "python",
+      "list-comprehension",
+      "map-function"
+    ],
+    "votos": 1000,
+    "link": "https://stackoverflow.com/questions/1247486/list-comprehension-vs-map"
+  },
+  {
+    "titulo": "Most efficient way to map function over numpy array",
+    "pergunta": "<p>What is the most efficient way to map a function over a numpy array? I am currently doing:</p>\n<pre><code>import numpy as np \n\nx = np.array([1, 2, 3, 4, 5])\n\n# Obtain array of square of each element in x\nsquarer = lambda t: t ** 2\nsquares = np.array([squarer(xi) for xi in x])\n</code></pre>\n<p>However, this is probably very inefficient, since I am using a list comprehension to construct the new array as a Python list before converting it back to a numpy array. Can we do better?</p>\n",
+    "tags": [
+      "python",
+      "performance",
+      "numpy"
+    ],
+    "votos": 715,
+    "link": "https://stackoverflow.com/questions/35215161/most-efficient-way-to-map-function-over-numpy-array"
+  },
+  {
+    "titulo": "Flatten an irregular (arbitrarily nested) list of lists",
+    "pergunta": "<p>Yes, I know this subject has been covered before:</p>\n<ul>\n<li><a href=\"https://stackoverflow.com/questions/120886\">Python idiom to chain (flatten) an infinite iterable of finite iterables?</a></li>\n<li><a href=\"https://stackoverflow.com/questions/406121\">Flattening a shallow list in Python</a></li>\n<li><a href=\"https://stackoverflow.com/questions/457215\">Comprehension for flattening a sequence of sequences?</a></li>\n<li><a href=\"https://stackoverflow.com/questions/952914\">How do I make a flat list out of a list of lists?</a></li>\n</ul>\n<p>but as far as I know, all solutions, except for one, fail on a list like <code>[[[1, 2, 3], [4, 5]], 6]</code>, where the desired output is <code>[1, 2, 3, 4, 5, 6]</code> (or perhaps even better, an iterator).</p>\n<p>The only solution I saw that works for an arbitrary nesting is found <a href=\"https://stackoverflow.com/questions/406121\">in this question</a>:</p>\n<pre><code>def flatten(x):\n    result = []\n    for el in x:\n        if hasattr(el, &quot;__iter__&quot;) and not isinstance(el, basestring):\n            result.extend(flatten(el))\n        else:\n            result.append(el)\n    return result\n</code></pre>\n<p>Is this the best approach? Did I overlook something? Any problems?</p>\n",
+    "tags": [
+      "python",
+      "list",
+      "optimization",
+      "nested-lists",
+      "flatten"
+    ],
+    "votos": 571,
+    "link": "https://stackoverflow.com/questions/2158395/flatten-an-irregular-arbitrarily-nested-list-of-lists"
+  },
+  {
+    "titulo": "Generator expressions vs. list comprehensions",
+    "pergunta": "<p>When should you use generator expressions and when should you use list comprehensions in Python?</p>\n\n<pre><code># Generator expression\n(x*2 for x in range(256))\n\n# List comprehension\n[x*2 for x in range(256)]\n</code></pre>\n",
+    "tags": [
+      "python",
+      "list-comprehension",
+      "generator-expression"
+    ],
+    "votos": 555,
+    "link": "https://stackoverflow.com/questions/47789/generator-expressions-vs-list-comprehensions"
+  },
+  {
+    "titulo": "Python Dictionary Comprehension",
+    "pergunta": "<p>Is it possible to create a dictionary comprehension in Python (for the keys)?</p>\n\n<p>Without list comprehensions, you can use something like this:</p>\n\n<pre><code>l = []\nfor n in range(1, 11):\n    l.append(n)\n</code></pre>\n\n<p>We can shorten this to a list comprehension: <code>l = [n for n in range(1, 11)]</code>.</p>\n\n<p>However, say I want to set a dictionary's keys to the same value.\nI can do:</p>\n\n<pre><code>d = {}\nfor n in range(1, 11):\n     d[n] = True # same value for each\n</code></pre>\n\n<p>I've tried this:</p>\n\n<pre><code>d = {}\nd[i for i in range(1, 11)] = True\n</code></pre>\n\n<p>However, I get a <code>SyntaxError</code> on the <code>for</code>.</p>\n\n<p>In addition (I don't need this part, but just wondering), can you set a dictionary's keys to a bunch of different values, like this:</p>\n\n<pre><code>d = {}\nfor n in range(1, 11):\n    d[n] = n\n</code></pre>\n\n<p>Is this possible with a dictionary comprehension?</p>\n\n<pre><code>d = {}\nd[i for i in range(1, 11)] = [x for x in range(1, 11)]\n</code></pre>\n\n<p>This also raises a <code>SyntaxError</code> on the <code>for</code>.</p>\n",
+    "tags": [
+      "python",
+      "dictionary",
+      "list-comprehension"
+    ],
+    "votos": 542,
+    "link": "https://stackoverflow.com/questions/14507591/python-dictionary-comprehension"
+  },
+  {
+    "titulo": "Find first sequence item that matches a criterion",
+    "pergunta": "<p>What would be the most elegant and efficient way of finding/returning the first list item that matches a certain criterion?</p>\n\n<p>For example, if I have a list of objects and I would like to get the first object of those with attribute <code>obj.val==5</code>. I could of course use list comprehension, but that would incur O(n) and if n is large, it's wasteful. I could also use a loop with <code>break</code> once the criterion was met, but I thought there could be a more pythonic/elegant solution.</p>\n",
+    "tags": [
+      "python",
+      "list"
+    ],
+    "votos": 426,
+    "link": "https://stackoverflow.com/questions/9868653/find-first-sequence-item-that-matches-a-criterion"
+  },
+  {
+    "titulo": "Pythonic way to combine for-loop and if-statement",
+    "pergunta": "<p>I know how to use both for loops and if statements on separate lines, such as:</p>\n\n<pre><code>&gt;&gt;&gt; a = [2,3,4,5,6,7,8,9,0]\n... xyz = [0,12,4,6,242,7,9]\n... for x in xyz:\n...     if x in a:\n...         print(x)\n0,4,6,7,9\n</code></pre>\n\n<p>And I know I can use a list comprehension to combine these when the statements are simple, such as:</p>\n\n<pre><code>print([x for x in xyz if x in a])\n</code></pre>\n\n<p>But what I can't find is a good example anywhere (to copy and learn from) demonstrating a complex set of commands (not just \"print x\") that occur following a combination of a for loop and some if statements. Something that I would expect looks like:</p>\n\n<pre><code>for x in xyz if x not in a:\n    print(x...)\n</code></pre>\n\n<p>Is this just not the way python is supposed to work?</p>\n",
+    "tags": [
+      "python",
+      "loops",
+      "if-statement",
+      "for-loop"
+    ],
+    "votos": 420,
+    "link": "https://stackoverflow.com/questions/6981717/pythonic-way-to-combine-for-loop-and-if-statement"
+  },
+  {
+    "titulo": "Double Iteration in List Comprehension",
+    "pergunta": "<p>In Python you can have multiple iterators in a list comprehension, like</p>\n\n<pre><code>[(x,y) for x in a for y in b]\n</code></pre>\n\n<p>for some suitable sequences a and b. I'm aware of the nested loop semantics of Python's list comprehensions.</p>\n\n<p>My question is: Can one iterator in the comprehension refer to the other? In other words: Could I have something like this:</p>\n\n<pre><code>[x for x in a for a in b]\n</code></pre>\n\n<p>where the current value of the outer loop is the iterator of the inner?</p>\n\n<p>As an example, if I have a nested list:</p>\n\n<pre><code>a=[[1,2],[3,4]]\n</code></pre>\n\n<p>what would the list comprehension expression be to achieve this result:</p>\n\n<pre><code>[1,2,3,4]\n</code></pre>\n\n<p>?? (Please only list comprehension answers, since this is what I want to find out).</p>\n",
+    "tags": [
+      "python",
+      "list-comprehension"
+    ],
+    "votos": 415,
+    "link": "https://stackoverflow.com/questions/1198777/double-iteration-in-list-comprehension"
+  }
+]

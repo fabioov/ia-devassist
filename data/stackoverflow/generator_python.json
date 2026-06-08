@@ -1,0 +1,121 @@
+[
+  {
+    "titulo": "What does the &quot;yield&quot; keyword do in Python?",
+    "pergunta": "<p>What functionality does the <a href=\"https://docs.python.org/3/reference/simple_stmts.html#yield\" rel=\"noreferrer\"><code>yield</code></a> keyword in Python provide?</p>\n<p>For example, I'm trying to understand this code<sup><strong>1</strong></sup>:</p>\n<pre><code>def _get_child_candidates(self, distance, min_dist, max_dist):\n    if self._leftchild and distance - max_dist &lt; self._median:\n        yield self._leftchild\n    if self._rightchild and distance + max_dist &gt;= self._median:\n        yield self._rightchild  \n</code></pre>\n<p>And this is the caller:</p>\n<pre><code>result, candidates = [], [self]\nwhile candidates:\n    node = candidates.pop()\n    distance = node._get_dist(obj)\n    if distance &lt;= max_dist and distance &gt;= min_dist:\n        result.extend(node._values)\n    candidates.extend(node._get_child_candidates(distance, min_dist, max_dist))\nreturn result\n</code></pre>\n<p>What happens when the method <code>_get_child_candidates</code> is called?\nIs a list returned? A single element? Is it called again? When will subsequent calls stop?</p>\n\n<hr />\n<sub>\n1. This piece of code was written by Jochen Schulz (jrschulz), who made a great Python library for metric spaces. This is the link to the complete source: <a href=\"https://well-adjusted.de/~jrspieker/mspace/\" rel=\"noreferrer\">Module mspace</a>.</sub> \n",
+    "tags": [
+      "python",
+      "iterator",
+      "generator",
+      "yield"
+    ],
+    "votos": 13135,
+    "link": "https://stackoverflow.com/questions/231767/what-does-the-yield-keyword-do-in-python"
+  },
+  {
+    "titulo": "Why is &quot;1000000000000000 in range(1000000000000001)&quot; so fast in Python 3?",
+    "pergunta": "<p>It is my understanding that the <code>range()</code> function, which is actually <a href=\"https://docs.python.org/3/library/stdtypes.html#typesseq-range\" rel=\"noreferrer\">an object type in Python 3</a>, generates its contents on the fly, similar to a generator.</p>\n<p>This being the case, I would have expected the following line to take an inordinate amount of time because, in order to determine whether 1 quadrillion is in the range, a quadrillion values would have to be generated:</p>\n<pre><code>1_000_000_000_000_000 in range(1_000_000_000_000_001)\n</code></pre>\n<p>Furthermore: it seems that no matter how many zeroes I add on, the calculation more or less takes the same amount of time (basically instantaneous).</p>\n<p>I have also tried things like this, but the calculation is still almost instant:</p>\n<pre><code># count by tens\n1_000_000_000_000_000_000_000 in range(0,1_000_000_000_000_000_000_001,10)\n</code></pre>\n<p>If I try to implement my own range function, the result is not so nice!</p>\n<pre><code>def my_crappy_range(N):\n    i = 0\n    while i &lt; N:\n        yield i\n        i += 1\n    return\n</code></pre>\n<p>What is the <code>range()</code> object doing under the hood that makes it so fast?</p>\n<hr />\n<p><a href=\"https://stackoverflow.com/a/30081318/2437514\">Martijn Pieters's answer</a> was chosen for its completeness, but also see <a href=\"https://stackoverflow.com/a/30081894/2437514\">abarnert's first answer</a> for a good discussion of what it means for <code>range</code> to be a full-fledged <em>sequence</em> in Python 3, and some information/warning regarding potential inconsistency for <code>__contains__</code> function optimization across Python implementations. <a href=\"https://stackoverflow.com/a/30088140/2437514\">abarnert's other answer</a> goes into some more detail and provides links for those interested in the history behind the optimization in Python 3 (and lack of optimization of <code>xrange</code> in Python 2). Answers <a href=\"https://stackoverflow.com/a/30081467/2437514\">by poke</a> and <a href=\"https://stackoverflow.com/a/30081470/2437514\">by wim</a> provide the relevant C source code and explanations for those who are interested.</p>\n",
+    "tags": [
+      "python",
+      "performance",
+      "python-3.x",
+      "range",
+      "python-internals"
+    ],
+    "votos": 3069,
+    "link": "https://stackoverflow.com/questions/30081275/why-is-1000000000000000-in-range1000000000000001-so-fast-in-python-3"
+  },
+  {
+    "titulo": "Generate random integers between 0 and 9",
+    "pergunta": "<p>How can I generate random integers between <code>0</code> and <code>9</code> (inclusive) in Python?</p>\n<p>For example, <code>0</code>, <code>1</code>, <code>2</code>, <code>3</code>, <code>4</code>, <code>5</code>, <code>6</code>, <code>7</code>, <code>8</code>, <code>9</code></p>\n",
+    "tags": [
+      "python",
+      "random",
+      "integer"
+    ],
+    "votos": 1932,
+    "link": "https://stackoverflow.com/questions/3996904/generate-random-integers-between-0-and-9"
+  },
+  {
+    "titulo": "How can I flush the output of the print function?",
+    "pergunta": "<p>How do I force Python's <code>print</code> function to flush the buffered output to the screen?</p>\n<hr />\n<p><sub><strong>See also:</strong> <a href=\"https://stackoverflow.com/questions/107705\">Disable output buffering</a> if the goal is to change the buffering behaviour generally. This question is about explicitly flushing output after a specific <code>print</code> call, even though output is still being buffered.</sub></p>\n<p><sub><strong>For duplicate closers:</strong> if a beginner is asking a question about trying to make output appear immediately while not using a newline at the end, <strong>please instead use</strong> <a href=\"https://stackoverflow.com/questions/25897335\">Why doesn&#39;t print output show up immediately in the terminal when there is no newline at the end?</a> to close the question. The current question isn't good enough because the person asking will likely <strong>not have a concept</strong> of buffering or flushing; the other question is intended to explain those concepts first, whereas this question is about the technical details.</sub></p>\n",
+    "tags": [
+      "python",
+      "printing",
+      "flush",
+      "output-buffering"
+    ],
+    "votos": 1642,
+    "link": "https://stackoverflow.com/questions/230751/how-can-i-flush-the-output-of-the-print-function"
+  },
+  {
+    "titulo": "Hidden features of Python",
+    "pergunta": "<p>What are the lesser-known but useful features of the Python programming language?</p>\n<ul>\n<li>Try to limit answers to Python core.</li>\n<li>One feature per answer.</li>\n<li>Give an example and short description of the feature, not just a link to documentation.</li>\n<li>Label the feature using a title as the first line.</li>\n</ul>\n<h2>Quick links to answers:</h2>\n<ul>\n<li><a href=\"https://stackoverflow.com/questions/101268/hidden-features-of-python#111176\">Argument Unpacking</a></li>\n<li><a href=\"https://stackoverflow.com/questions/101268/hidden-features-of-python#112303\">Braces</a></li>\n<li><a href=\"https://stackoverflow.com/questions/101268/hidden-features-of-python#101945\">Chaining Comparison Operators</a></li>\n<li><a href=\"https://stackoverflow.com/questions/101268/hidden-features-of-python#101447\">Decorators</a></li>\n<li><a href=\"https://stackoverflow.com/questions/101268/hidden-features-of-python#113198\">Default Argument Gotchas / Dangers of Mutable Default arguments</a></li>\n<li><a href=\"https://stackoverflow.com/questions/101268/hidden-features-of-python#102062\">Descriptors</a></li>\n<li><a href=\"https://stackoverflow.com/questions/101268/hidden-features-of-python#111970\">Dictionary default <code>.get</code> value</a></li>\n<li><a href=\"https://stackoverflow.com/questions/101268/hidden-features-of-python#102065\">Docstring Tests</a></li>\n<li><a href=\"https://stackoverflow.com/questions/101268/hidden-features-of-python/112316#112316\">Ellipsis Slicing Syntax</a></li>\n<li><a href=\"https://stackoverflow.com/questions/101268/hidden-features-of-python#117116\">Enumeration</a></li>\n<li><a href=\"https://stackoverflow.com/questions/101268/hidden-features-of-python#114420\">For/else</a></li>\n<li><a href=\"https://stackoverflow.com/questions/101268/hidden-features-of-python#102202\">Function as iter() argument</a></li>\n<li><a href=\"https://stackoverflow.com/questions/101268/hidden-features-of-python#101310\">Generator expressions</a></li>\n<li><a href=\"https://stackoverflow.com/questions/101268/hidden-features-of-python#101276\"><code>import this</code></a></li>\n<li><a href=\"https://stackoverflow.com/questions/101268/hidden-features-of-python#102037\">In Place Value Swapping</a></li>\n<li><a href=\"https://stackoverflow.com/questions/101268/hidden-features-of-python#101840\">List stepping</a></li>\n<li><a href=\"https://stackoverflow.com/questions/101268/hidden-features-of-python#112286\"><code>__missing__</code> items</a></li>\n<li><a href=\"https://stackoverflow.com/questions/101268/hidden-features-of-python#101537\">Multi-line Regex</a></li>\n<li><a href=\"https://stackoverflow.com/questions/101268/hidden-features-of-python#113164\">Named string formatting</a></li>\n<li><a href=\"https://stackoverflow.com/questions/101268/hidden-features-of-python#101549\">Nested list/generator comprehensions</a></li>\n<li><a href=\"https://stackoverflow.com/questions/101268/hidden-features-of-python#108297\">New types at runtime</a></li>\n<li><a href=\"https://stackoverflow.com/questions/101268/hidden-features-of-python#113833\"><code>.pth</code> files</a></li>\n<li><a href=\"https://stackoverflow.com/questions/101268/hidden-features-of-python#1024693\">ROT13 Encoding</a></li>\n<li><a href=\"https://stackoverflow.com/questions/101268/hidden-features-of-python#143636\">Regex Debugging</a></li>\n<li><a href=\"https://stackoverflow.com/questions/101268/hidden-features-of-python#101739\">Sending to Generators</a></li>\n<li><a href=\"https://stackoverflow.com/questions/101268/hidden-features-of-python#168270\">Tab Completion in Interactive Interpreter</a></li>\n<li><a href=\"https://stackoverflow.com/questions/101268/hidden-features-of-python#116480\">Ternary Expression</a></li>\n<li><a href=\"https://stackoverflow.com/questions/101268/hidden-features-of-python#114157\"><code>try/except/else</code></a></li>\n<li><a href=\"https://stackoverflow.com/questions/101268/hidden-features-of-python#3267903\">Unpacking+<code>print()</code> function</a></li>\n<li><a href=\"https://stackoverflow.com/questions/101268/hidden-features-of-python#109182\"><code>with</code> statement</a></li>\n</ul>\n",
+    "tags": [
+      "python",
+      "hidden-features"
+    ],
+    "votos": 1414,
+    "link": "https://stackoverflow.com/questions/101268/hidden-features-of-python"
+  },
+  {
+    "titulo": "&quot;Large data&quot; workflows using pandas",
+    "pergunta": "<p>I have tried to puzzle out an answer to this question for many months while learning pandas.  I use SAS for my day-to-day work and it is great for it's out-of-core support.  However, SAS is horrible as a piece of software for numerous other reasons.</p>\n\n<p>One day I hope to replace my use of SAS with python and pandas, but I currently lack an out-of-core workflow for large datasets.  I'm not talking about \"big data\" that requires a distributed network, but rather files too large to fit in memory but small enough to fit on a hard-drive.</p>\n\n<p>My first thought is to use <code>HDFStore</code> to hold large datasets on disk and pull only the pieces I need into dataframes for analysis.  Others have mentioned MongoDB as an easier to use alternative.  My question is this:</p>\n\n<p>What are some best-practice workflows for accomplishing the following:</p>\n\n<ol>\n<li>Loading flat files into a permanent, on-disk database structure</li>\n<li>Querying that database to retrieve data to feed into a pandas data structure</li>\n<li>Updating the database after manipulating pieces in pandas</li>\n</ol>\n\n<p>Real-world examples would be much appreciated, especially from anyone who uses pandas on \"large data\".</p>\n\n<p>Edit -- an example of how I would like this to work:</p>\n\n<ol>\n<li>Iteratively import a large flat-file and store it in a permanent, on-disk database structure.  These files are typically too large to fit in memory.</li>\n<li>In order to use Pandas, I would like to read subsets of this data (usually just a few columns at a time) that can fit in memory.</li>\n<li>I would create new columns by performing various operations on the selected columns.</li>\n<li>I would then have to append these new columns into the database structure.</li>\n</ol>\n\n<p>I am trying to find a best-practice way of performing these steps. Reading links about pandas and pytables it seems that appending a new column could be a problem.</p>\n\n<p>Edit -- Responding to Jeff's questions specifically:</p>\n\n<ol>\n<li>I am building consumer credit risk models. The kinds of data include phone, SSN and address characteristics; property values; derogatory information like criminal records, bankruptcies, etc... The datasets I use every day have nearly 1,000 to 2,000 fields on average of mixed data types: continuous, nominal and ordinal variables of both numeric and character data.  I rarely append rows, but I do perform many operations that create new columns.</li>\n<li>Typical operations involve combining several columns using conditional logic into a new, compound column. For example, <code>if var1 &gt; 2 then newvar = 'A' elif var2 = 4 then newvar = 'B'</code>.  The result of these operations is a new column for every record in my dataset.</li>\n<li>Finally, I would like to append these new columns into the on-disk data structure.  I would repeat step 2, exploring the data with crosstabs and descriptive statistics trying to find interesting, intuitive relationships to model.</li>\n<li>A typical project file is usually about 1GB.  Files are organized into such a manner where a row consists of a record of consumer data.  Each row has the same number of columns for every record.  This will always be the case.</li>\n<li>It's pretty rare that I would subset by rows when creating a new column.  However, it's pretty common for me to subset on rows when creating reports or generating descriptive statistics.  For example, I might want to create a simple frequency for a specific line of business, say Retail credit cards.  To do this, I would select only those records where the line of business = retail in addition to whichever columns I want to report on.  When creating new columns, however, I would pull all rows of data and only the columns I need for the operations.</li>\n<li>The modeling process requires that I analyze every column, look for interesting relationships with some outcome variable, and create new compound columns that describe those relationships.  The columns that I explore are usually done in small sets.  For example, I will focus on a set of say 20 columns just dealing with property values and observe how they relate to defaulting on a loan.  Once those are explored and new columns are created, I then move on to another group of columns, say college education, and repeat the process.  What I'm doing is creating candidate variables that explain the relationship between my data and some outcome.  At the very end of this process, I apply some learning techniques that create an equation out of those compound columns.</li>\n</ol>\n\n<p>It is rare that I would ever add rows to the dataset.  I will nearly always be creating new columns (variables or features in statistics/machine learning parlance).</p>\n",
+    "tags": [
+      "python",
+      "mongodb",
+      "pandas",
+      "hdf5",
+      "large-data"
+    ],
+    "votos": 1190,
+    "link": "https://stackoverflow.com/questions/14262433/large-data-workflows-using-pandas"
+  },
+  {
+    "titulo": "List comprehension vs map",
+    "pergunta": "<p>Is there a reason to prefer using <a href=\"https://docs.python.org/3.8/library/functions.html#map\" rel=\"noreferrer\">map()</a> over list comprehension or vice versa?  Is either of them generally more efficient or considered generally more Pythonic than the other?</p>\n",
+    "tags": [
+      "python",
+      "list-comprehension",
+      "map-function"
+    ],
+    "votos": 1000,
+    "link": "https://stackoverflow.com/questions/1247486/list-comprehension-vs-map"
+  },
+  {
+    "titulo": "What is the best project structure for a Python application?",
+    "pergunta": "<p>Imagine that you want to develop a non-trivial end-user desktop (not web) application in Python. What is the best way to structure the project's folder hierarchy?</p>\n\n<p>Desirable features are ease of maintenance, IDE-friendliness, suitability for source control branching/merging, and easy generation of install packages.</p>\n\n<p>In particular:</p>\n\n<ol>\n<li>Where do you put the source?</li>\n<li>Where do you put application startup scripts?</li>\n<li>Where do you put the IDE project cruft?</li>\n<li>Where do you put the unit/acceptance tests?</li>\n<li>Where do you put non-Python data such as config files?</li>\n<li>Where do you put non-Python sources such as C++ for pyd/so binary extension modules?</li>\n</ol>\n",
+    "tags": [
+      "python",
+      "directory-structure",
+      "organization",
+      "project-structure"
+    ],
+    "votos": 990,
+    "link": "https://stackoverflow.com/questions/193161/what-is-the-best-project-structure-for-a-python-application"
+  },
+  {
+    "titulo": "Adding a method to an existing object instance in Python",
+    "pergunta": "<p>How do I add a method to an existing object (i.e., not in the class definition) in Python?</p>\n<p>I understand that it's not generally considered good practice to do so, except in some cases.</p>\n",
+    "tags": [
+      "python",
+      "oop",
+      "methods",
+      "monkeypatching"
+    ],
+    "votos": 869,
+    "link": "https://stackoverflow.com/questions/972/adding-a-method-to-an-existing-object-instance-in-python"
+  },
+  {
+    "titulo": "How can I make a datetime object aware (not naive)?",
+    "pergunta": "<p><strong>What I need to do</strong></p>\n<p>I have a time zone-unaware datetime object, to which I need to add a time zone in order to be able to compare it with other time zone-aware datetime objects. I do not want to convert my entire application to time zone unaware for this one legacy case.</p>\n<p><strong>What I've tried</strong></p>\n<p>First, to demonstrate the problem:</p>\n<p>Output from a Python interactive session:</p>\n<pre class=\"lang-none prettyprint-override\"><code>Python 2.6.1 (r261:67515, Jun 24 2010, 21:47:49)\n[GCC 4.2.1 (Apple Inc. build 5646)] on darwin\nType &quot;help&quot;, &quot;copyright&quot;, &quot;credits&quot; or &quot;license&quot; for more information.\n</code></pre>\n<p>And:</p>\n<pre class=\"lang-python prettyprint-override\"><code>import datetime\nimport pytz\n\nunaware = datetime.datetime(2011, 8, 15, 8, 15, 12, 0)\nunaware\n</code></pre>\n<p>Output:</p>\n<pre class=\"lang-none prettyprint-override\"><code>datetime.datetime(2011, 8, 15, 8, 15, 12)\n</code></pre>\n<p>And:</p>\n<pre class=\"lang-python prettyprint-override\"><code>aware = datetime.datetime(2011, 8, 15, 8, 15, 12, 0, pytz.UTC)\naware\n</code></pre>\n<p>Output:</p>\n<pre class=\"lang-none prettyprint-override\"><code>datetime.datetime(2011, 8, 15, 8, 15, 12, tzinfo=&lt;UTC&gt;)\n</code></pre>\n<p>And:</p>\n<pre class=\"lang-python prettyprint-override\"><code>aware == unaware\n</code></pre>\n<p>Output:</p>\n<pre class=\"lang-none prettyprint-override\"><code>Traceback (most recent call last):\n  File &quot;&lt;stdin&gt;&quot;, line 1, in &lt;module&gt;\nTypeError: can't compare offset-naive and offset-aware datetimes\n</code></pre>\n<p>First, I tried <code>astimezone</code>:</p>\n<pre class=\"lang-python prettyprint-override\"><code>unaware.astimezone(pytz.UTC)\n</code></pre>\n<p>Output:</p>\n<pre class=\"lang-none prettyprint-override\"><code>Traceback (most recent call last):\n  File &quot;&lt;stdin&gt;&quot;, line 1, in &lt;module&gt;\nValueError: astimezone() cannot be applied to a naive datetime\n</code></pre>\n<p>It's not terribly surprising this failed, since it's actually trying to do a conversion.  Replace seemed like a better choice (as per <em><a href=\"https://stackoverflow.com/questions/4530069/python-how-to-get-a-value-of-datetime-today-that-is-timezone-aware\">How do I get a value of datetime.today() in Python that is &quot;time zone aware&quot;?</a></em>):</p>\n<pre class=\"lang-python prettyprint-override\"><code>unaware.replace(tzinfo=pytz.UTC)\n</code></pre>\n<p>Output:</p>\n<pre class=\"lang-none prettyprint-override\"><code>datetime.datetime(2011, 8, 15, 8, 15, 12, tzinfo=&lt;UTC&gt;)\n</code></pre>\n<p>And:</p>\n<pre class=\"lang-python prettyprint-override\"><code>unaware == aware\n</code></pre>\n<p>Output:</p>\n<pre class=\"lang-none prettyprint-override\"><code>Traceback (most recent call last):\n  File &quot;&lt;stdin&gt;&quot;, line 1, in &lt;module&gt;\nTypeError: can't compare offset-naive and offset-aware datetimes\n</code></pre>\n<p>But as you can see, replace seems to set the <code>tzinfo</code>, but not make the object aware.  I'm getting ready to fall back to doctoring the input string to have a time zone before parsing it (I'm using <code>dateutil</code> for parsing, if that matters), but that seems incredibly kludgy.</p>\n<p>Also, I've tried this in both Python 2.6 and Python 2.7, with the same results.</p>\n<p><strong>Context</strong></p>\n<p>I am writing a parser for some data files. There is an old format I need to support where the date string does not have a time zone indicator. I've already fixed the data source, but I still need to support the legacy data format.</p>\n<p>A one-time conversion of the legacy data is not an option for various business bovine fecal matter reasons. While in general, I do not like the idea of hard coding a default time zone, in this case it seems like the best option. I know with reasonable confidence that all the legacy data in question is in <a href=\"https://en.wikipedia.org/wiki/Coordinated_Universal_Time\" rel=\"nofollow noreferrer\">UTC</a>, so I'm prepared to accept the risk of defaulting to that in this case.</p>\n",
+    "tags": [
+      "python",
+      "timezone",
+      "python-datetime",
+      "python-2.6",
+      "pytz"
+    ],
+    "votos": 862,
+    "link": "https://stackoverflow.com/questions/7065164/how-can-i-make-a-datetime-object-aware-not-naive"
+  }
+]

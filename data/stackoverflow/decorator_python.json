@@ -1,0 +1,122 @@
+[
+  {
+    "titulo": "How do I make function decorators and chain them together?",
+    "pergunta": "<p>How do I make two decorators in Python that would do the following?</p>\n<pre><code>@make_bold\n@make_italic\ndef say():\n   return &quot;Hello&quot;\n</code></pre>\n<p>Calling <code>say()</code> should return:</p>\n<pre><code>&quot;&lt;b&gt;&lt;i&gt;Hello&lt;/i&gt;&lt;/b&gt;&quot;\n</code></pre>\n",
+    "tags": [
+      "python",
+      "function",
+      "decorator",
+      "python-decorators",
+      "chain"
+    ],
+    "votos": 3202,
+    "link": "https://stackoverflow.com/questions/739654/how-do-i-make-function-decorators-and-chain-them-together"
+  },
+  {
+    "titulo": "What is the best way of implementing a singleton in Python?",
+    "pergunta": "<p>I have multiple classes which would become singletons (my use case is for a logger, but this is not important). I do not wish to clutter several classes with added gumph when I can simply inherit or decorate.</p>\n<p>Best methods:</p>\n<hr />\n<h2>Method 1: A decorator</h2>\n<pre><code>def singleton(class_):\n    instances = {}\n    def getinstance(*args, **kwargs):\n        if class_ not in instances:\n            instances[class_] = class_(*args, **kwargs)\n        return instances[class_]\n    return getinstance\n\n@singleton\nclass MyClass(BaseClass):\n    pass\n</code></pre>\n<p>Pros</p>\n<ul>\n<li>Decorators are additive in a way that is often more intuitive than multiple inheritance.</li>\n</ul>\n<p>Cons</p>\n<ul>\n<li><p>While objects created using <code>MyClass()</code> would be true singleton objects, <code>MyClass</code> itself is a function, not a class, so you cannot call class methods from it. Also for</p>\n<pre class=\"lang-py prettyprint-override\"><code>x = MyClass();\ny = MyClass();\nt = type(n)();\n</code></pre>\n</li>\n</ul>\n<p>then <code>x == y</code> but <code>x != t &amp;&amp; y != t</code></p>\n<hr />\n<h2>Method 2: A base class</h2>\n<pre><code>class Singleton(object):\n    _instance = None\n    def __new__(class_, *args, **kwargs):\n        if not isinstance(class_._instance, class_):\n            class_._instance = object.__new__(class_, *args, **kwargs)\n        return class_._instance\n\nclass MyClass(Singleton, BaseClass):\n    pass\n</code></pre>\n<p>Pros</p>\n<ul>\n<li>It's a true class</li>\n</ul>\n<p>Cons</p>\n<ul>\n<li>Multiple inheritance - eugh! <code>__new__</code> could be overwritten during inheritance from a second base class? One has to think more than is necessary.</li>\n</ul>\n<hr />\n<h2>Method 3: A <a href=\"https://stackoverflow.com/questions/100003/what-is-a-metaclass-in-python\">metaclass</a></h2>\n<pre><code>class Singleton(type):\n    _instances = {}\n    def __call__(cls, *args, **kwargs):\n        if cls not in cls._instances:\n            cls._instances[cls] = super(Singleton, cls).__call__(*args, **kwargs)\n        return cls._instances[cls]\n\n#Python2\nclass MyClass(BaseClass):\n    __metaclass__ = Singleton\n\n#Python3\nclass MyClass(BaseClass, metaclass=Singleton):\n    pass\n</code></pre>\n<p>Pros</p>\n<ul>\n<li>It's a true class</li>\n<li>Auto-magically covers inheritance</li>\n<li>Uses <code>__metaclass__</code> for its proper purpose (and made me aware of it)</li>\n</ul>\n<p>Cons</p>\n<ul>\n<li>Are there any?</li>\n</ul>\n<hr />\n<h2>Method 4: decorator returning a class with the same name</h2>\n<pre><code>def singleton(class_):\n    class class_w(class_):\n        _instance = None\n        def __new__(class_, *args, **kwargs):\n            if class_w._instance is None:\n                class_w._instance = super(class_w,\n                                    class_).__new__(class_,\n                                                    *args,\n                                                    **kwargs)\n                class_w._instance._sealed = False\n            return class_w._instance\n        def __init__(self, *args, **kwargs):\n            if self._sealed:\n                return\n            super(class_w, self).__init__(*args, **kwargs)\n            self._sealed = True\n    class_w.__name__ = class_.__name__\n    return class_w\n\n@singleton\nclass MyClass(BaseClass):\n    pass\n</code></pre>\n<p>Pros</p>\n<ul>\n<li>It's a true class</li>\n<li>Auto-magically covers inheritance</li>\n</ul>\n<p>Cons</p>\n<ul>\n<li>Is there not an overhead for creating each new class? Here we are creating two classes for each class we wish to make a singleton. While this is fine in my case, I worry that this might not scale. Of course there is a matter of debate as to whether it aught to be too easy to scale this pattern...</li>\n<li>What is the point of the <code>_sealed</code> attribute</li>\n<li>Can't call methods of the same name on base classes using <code>super()</code> because they will recurse. This means you can't customize <code>__new__</code> and can't subclass a class that needs you to call up to <code>__init__</code>.</li>\n</ul>\n<hr />\n<h2>Method 5: a module</h2>\n<p>a module file <code>singleton.py</code></p>\n<p>Pros</p>\n<ul>\n<li>Simple is better than complex</li>\n</ul>\n<p>Cons</p>\n<ul>\n<li>Not lazily instantiated</li>\n</ul>\n<p><sub>This question is not for the discussion of whether or not the <a href=\"http://en.wikipedia.org/wiki/Singleton_pattern\" rel=\"noreferrer\">singleton design pattern</a> is desirable, is an anti-pattern, or for any religious wars, but to discuss how this pattern is best implemented in Python in such a way that is most Pythonic. In this instance I define 'most Pythonic' to mean that it follows the 'principle of least astonishment'.</sub></p>\n",
+    "tags": [
+      "python",
+      "singleton",
+      "decorator",
+      "base-class",
+      "metaclass"
+    ],
+    "votos": 1811,
+    "link": "https://stackoverflow.com/questions/6760685/what-is-the-best-way-of-implementing-a-singleton-in-python"
+  },
+  {
+    "titulo": "How does the @property decorator work in Python?",
+    "pergunta": "<p>I would like to understand how the built-in function <code>property</code> works. What confuses me is that <code>property</code> can also be used as a decorator, but it only takes arguments when used as a built-in function and not when used as a decorator.</p>\n<p>This example is from the <a href=\"http://docs.python.org/3/library/functions.html#property\" rel=\"noreferrer\">documentation</a>:</p>\n<pre><code>class C:\n    def __init__(self):\n        self._x = None\n\n    def getx(self):\n        return self._x\n\n    def setx(self, value):\n        self._x = value\n\n    def delx(self):\n        del self._x\n\n    x = property(getx, setx, delx, &quot;I'm the 'x' property.&quot;)\n</code></pre>\n<p><code>property</code>'s arguments are <code>getx</code>, <code>setx</code>, <code>delx</code> and a doc string.</p>\n<p>In the code below <code>property</code> is used as a decorator. The object of it is the <code>x</code> function, but in the code above there is no place for an object function in the arguments.</p>\n<pre><code>class C:\n    def __init__(self):\n        self._x = None\n\n    @property\n    def x(self):\n        &quot;&quot;&quot;I'm the 'x' property.&quot;&quot;&quot;\n        return self._x\n\n    @x.setter\n    def x(self, value):\n        self._x = value\n\n    @x.deleter\n    def x(self):\n        del self._x\n</code></pre>\n<p>How are the <code>x.setter</code> and <code>x.deleter</code> decorators created in this case?</p>\n",
+    "tags": [
+      "python",
+      "properties",
+      "decorator",
+      "python-decorators",
+      "python-internals"
+    ],
+    "votos": 1431,
+    "link": "https://stackoverflow.com/questions/17330160/how-does-the-property-decorator-work-in-python"
+  },
+  {
+    "titulo": "Hidden features of Python",
+    "pergunta": "<p>What are the lesser-known but useful features of the Python programming language?</p>\n<ul>\n<li>Try to limit answers to Python core.</li>\n<li>One feature per answer.</li>\n<li>Give an example and short description of the feature, not just a link to documentation.</li>\n<li>Label the feature using a title as the first line.</li>\n</ul>\n<h2>Quick links to answers:</h2>\n<ul>\n<li><a href=\"https://stackoverflow.com/questions/101268/hidden-features-of-python#111176\">Argument Unpacking</a></li>\n<li><a href=\"https://stackoverflow.com/questions/101268/hidden-features-of-python#112303\">Braces</a></li>\n<li><a href=\"https://stackoverflow.com/questions/101268/hidden-features-of-python#101945\">Chaining Comparison Operators</a></li>\n<li><a href=\"https://stackoverflow.com/questions/101268/hidden-features-of-python#101447\">Decorators</a></li>\n<li><a href=\"https://stackoverflow.com/questions/101268/hidden-features-of-python#113198\">Default Argument Gotchas / Dangers of Mutable Default arguments</a></li>\n<li><a href=\"https://stackoverflow.com/questions/101268/hidden-features-of-python#102062\">Descriptors</a></li>\n<li><a href=\"https://stackoverflow.com/questions/101268/hidden-features-of-python#111970\">Dictionary default <code>.get</code> value</a></li>\n<li><a href=\"https://stackoverflow.com/questions/101268/hidden-features-of-python#102065\">Docstring Tests</a></li>\n<li><a href=\"https://stackoverflow.com/questions/101268/hidden-features-of-python/112316#112316\">Ellipsis Slicing Syntax</a></li>\n<li><a href=\"https://stackoverflow.com/questions/101268/hidden-features-of-python#117116\">Enumeration</a></li>\n<li><a href=\"https://stackoverflow.com/questions/101268/hidden-features-of-python#114420\">For/else</a></li>\n<li><a href=\"https://stackoverflow.com/questions/101268/hidden-features-of-python#102202\">Function as iter() argument</a></li>\n<li><a href=\"https://stackoverflow.com/questions/101268/hidden-features-of-python#101310\">Generator expressions</a></li>\n<li><a href=\"https://stackoverflow.com/questions/101268/hidden-features-of-python#101276\"><code>import this</code></a></li>\n<li><a href=\"https://stackoverflow.com/questions/101268/hidden-features-of-python#102037\">In Place Value Swapping</a></li>\n<li><a href=\"https://stackoverflow.com/questions/101268/hidden-features-of-python#101840\">List stepping</a></li>\n<li><a href=\"https://stackoverflow.com/questions/101268/hidden-features-of-python#112286\"><code>__missing__</code> items</a></li>\n<li><a href=\"https://stackoverflow.com/questions/101268/hidden-features-of-python#101537\">Multi-line Regex</a></li>\n<li><a href=\"https://stackoverflow.com/questions/101268/hidden-features-of-python#113164\">Named string formatting</a></li>\n<li><a href=\"https://stackoverflow.com/questions/101268/hidden-features-of-python#101549\">Nested list/generator comprehensions</a></li>\n<li><a href=\"https://stackoverflow.com/questions/101268/hidden-features-of-python#108297\">New types at runtime</a></li>\n<li><a href=\"https://stackoverflow.com/questions/101268/hidden-features-of-python#113833\"><code>.pth</code> files</a></li>\n<li><a href=\"https://stackoverflow.com/questions/101268/hidden-features-of-python#1024693\">ROT13 Encoding</a></li>\n<li><a href=\"https://stackoverflow.com/questions/101268/hidden-features-of-python#143636\">Regex Debugging</a></li>\n<li><a href=\"https://stackoverflow.com/questions/101268/hidden-features-of-python#101739\">Sending to Generators</a></li>\n<li><a href=\"https://stackoverflow.com/questions/101268/hidden-features-of-python#168270\">Tab Completion in Interactive Interpreter</a></li>\n<li><a href=\"https://stackoverflow.com/questions/101268/hidden-features-of-python#116480\">Ternary Expression</a></li>\n<li><a href=\"https://stackoverflow.com/questions/101268/hidden-features-of-python#114157\"><code>try/except/else</code></a></li>\n<li><a href=\"https://stackoverflow.com/questions/101268/hidden-features-of-python#3267903\">Unpacking+<code>print()</code> function</a></li>\n<li><a href=\"https://stackoverflow.com/questions/101268/hidden-features-of-python#109182\"><code>with</code> statement</a></li>\n</ul>\n",
+    "tags": [
+      "python",
+      "hidden-features"
+    ],
+    "votos": 1414,
+    "link": "https://stackoverflow.com/questions/101268/hidden-features-of-python"
+  },
+  {
+    "titulo": "What does functools.wraps do?",
+    "pergunta": "<p>In a comment on this <a href=\"https://stackoverflow.com/questions/306130/python-decorator-makes-function-forget-that-it-belongs-to-a-class#306277\">answer to another question</a>, someone said that they weren't sure what <code>functools.wraps</code> was doing. So, I'm asking this question so that there will be a record of it on StackOverflow for future reference: what does <code>functools.wraps</code> do, exactly?</p>\n",
+    "tags": [
+      "python",
+      "decorator",
+      "functools"
+    ],
+    "votos": 1066,
+    "link": "https://stackoverflow.com/questions/308999/what-does-functools-wraps-do"
+  },
+  {
+    "titulo": "Decorators with parameters?",
+    "pergunta": "<p>I have a problem with the transfer of the variable <code>insurance_mode</code> by the decorator. I would do it by the following decorator statement:</p>\n<pre><code>@execute_complete_reservation(True)\ndef test_booking_gta_object(self):\n    self.test_select_gta_object()\n</code></pre>\n<p>but unfortunately, this statement does not work. Perhaps maybe there is better way to solve this problem.</p>\n<pre><code>def execute_complete_reservation(test_case,insurance_mode):\n    def inner_function(self,*args,**kwargs):\n        self.test_create_qsf_query()\n        test_case(self,*args,**kwargs)\n        self.test_select_room_option()\n        if insurance_mode:\n            self.test_accept_insurance_crosseling()\n        else:\n            self.test_decline_insurance_crosseling()\n        self.test_configure_pax_details()\n        self.test_configure_payer_details\n\n    return inner_function\n</code></pre>\n",
+    "tags": [
+      "python",
+      "function",
+      "parameters",
+      "arguments",
+      "decorator"
+    ],
+    "votos": 772,
+    "link": "https://stackoverflow.com/questions/5929107/decorators-with-parameters"
+  },
+  {
+    "titulo": "What are data classes and how are they different from common classes?",
+    "pergunta": "<p><a href=\"https://www.python.org/dev/peps/pep-0557/\" rel=\"noreferrer\">PEP 557</a> introduces data classes into the Python standard library. It says that by applying the <a href=\"https://docs.python.org/3/library/dataclasses.html#dataclasses.dataclass\" rel=\"noreferrer\"><code>@dataclass</code></a> decorator shown below, it will generate &quot;among other things, an <code>__init__()</code>&quot;.</p>\n<blockquote>\n<pre><code>from dataclasses import dataclass\n\n@dataclass\nclass InventoryItem:\n    &quot;&quot;&quot;Class for keeping track of an item in inventory.&quot;&quot;&quot;\n    name: str\n    unit_price: float\n    quantity_on_hand: int = 0\n\n    def total_cost(self) -&gt; float:\n        return self.unit_price * self.quantity_on_hand\n</code></pre>\n</blockquote>\n<p>It also says dataclasses are &quot;mutable namedtuples with default&quot;, but I don't understand what this means, nor how data classes are different from common classes.</p>\n<p>What are data classes and when is it best to use them?</p>\n",
+    "tags": [
+      "python",
+      "class",
+      "python-3.7",
+      "python-dataclasses"
+    ],
+    "votos": 509,
+    "link": "https://stackoverflow.com/questions/47955263/what-are-data-classes-and-how-are-they-different-from-common-classes"
+  },
+  {
+    "titulo": "What are some common uses for Python decorators?",
+    "pergunta": "<p>While I like to think of myself as a reasonably competent Python coder, one aspect of the language I've never been able to grok is decorators.</p>\n\n<p>I know what they are (superficially), I've read tutorials, examples, questions on Stack Overflow, and I understand the syntax, can write my own, occasionally use @classmethod and @staticmethod, but it never occurs to me to use a decorator to solve a problem in my own Python code.  I never encounter a problem where I think, \"Hmm...this looks like a job for a decorator!\"</p>\n\n<p>So, I'm wondering if you guys might offer some examples of where you've used decorators in your own programs, and hopefully I'll have an \"A-ha!\" moment and <em>get</em> them.</p>\n",
+    "tags": [
+      "python",
+      "decorator"
+    ],
+    "votos": 374,
+    "link": "https://stackoverflow.com/questions/489720/what-are-some-common-uses-for-python-decorators"
+  },
+  {
+    "titulo": "How to get method parameter names?",
+    "pergunta": "<p>Given that a function <code>a_method</code> has been defined like</p>\n<pre><code>def a_method(arg1, arg2):\n    pass\n</code></pre>\n<p>Starting from <code>a_method</code> itself, how can I get the argument names - for example, as a tuple of strings, like <code>(&quot;arg1&quot;, &quot;arg2&quot;)</code>?</p>\n",
+    "tags": [
+      "python",
+      "decorator",
+      "introspection",
+      "python-datamodel"
+    ],
+    "votos": 374,
+    "link": "https://stackoverflow.com/questions/218616/how-to-get-method-parameter-names"
+  },
+  {
+    "titulo": "Data Classes vs typing.NamedTuple primary use cases",
+    "pergunta": "<h2>Long story short</h2>\n\n<p><a href=\"https://www.python.org/dev/peps/pep-0557/\" rel=\"noreferrer\">PEP-557</a> introduced data classes into Python standard library, that basically can fill the same role as <code>collections.namedtuple</code> and <code>typing.NamedTuple</code>. And now I'm wondering how to separate the use cases in which namedtuple is still a better solution.</p>\n\n<h2>Data classes advantages over NamedTuple</h2>\n\n<p>Of course, all the credit goes to <code>dataclass</code> if we need:</p>\n\n<ul>\n<li>mutable objects</li>\n<li>inheritance support</li>\n<li><code>property</code> decorators, manageable attributes</li>\n<li>generated method definitions out of the box or customizable method definitions</li>\n</ul>\n\n<p>Data classes advantages are briefly explained in the same PEP: <a href=\"https://www.python.org/dev/peps/pep-0557/#why-not-just-use-namedtuple\" rel=\"noreferrer\">Why not just use namedtuple</a>.</p>\n\n<h2>Q: In which cases namedtuple is still a better choice?</h2>\n\n<p>But how about an opposite question for namedtuples: why not just use dataclass?\nI guess probably namedtuple is better from the performance standpoint but found no confirmation on that yet.</p>\n\n<h2>Example</h2>\n\n<p>Let's consider the following situation:</p>\n\n<p>We are going to store pages dimensions in a small container with statically defined fields, type hinting and named access. No further hashing, comparing and so on are needed.</p>\n\n<p><strong>NamedTuple approach:</strong></p>\n\n<pre><code>from typing import NamedTuple\n\nPageDimensions = NamedTuple(\"PageDimensions\", [('width', int), ('height', int)])\n</code></pre>\n\n<p><strong>DataClass approach:</strong></p>\n\n<pre><code>from dataclasses import dataclass\n\n@dataclass\nclass PageDimensions:\n    width: int\n    height: int\n</code></pre>\n\n<p>Which solution is preferable and why?</p>\n\n<p>P.S. the question isn't a duplicate of <a href=\"https://stackoverflow.com/questions/47955263\">that one</a> in any way, because here I'm asking about <strong>the cases</strong> in which namedtuple is better, not about <strong>the difference</strong> (I've checked docs and sources before asking)</p>\n",
+    "tags": [
+      "python",
+      "namedtuple",
+      "pep",
+      "python-3.7",
+      "python-dataclasses"
+    ],
+    "votos": 309,
+    "link": "https://stackoverflow.com/questions/51671699/data-classes-vs-typing-namedtuple-primary-use-cases"
+  }
+]

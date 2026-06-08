@@ -1,0 +1,116 @@
+[
+  {
+    "titulo": "How do I merge two dictionaries in a single expression in Python?",
+    "pergunta": "<p>I want to merge two dictionaries into a new dictionary.</p>\n<pre><code>x = {'a': 1, 'b': 2}\ny = {'b': 3, 'c': 4}\nz = merge(x, y)\n\n&gt;&gt;&gt; z\n{'a': 1, 'b': 3, 'c': 4}\n</code></pre>\n<p>Whenever a key <code>k</code> is present in both dictionaries, only the value <code>y[k]</code> should be kept.</p>\n",
+    "tags": [
+      "python",
+      "dictionary",
+      "merge"
+    ],
+    "votos": 7127,
+    "link": "https://stackoverflow.com/questions/38987/how-do-i-merge-two-dictionaries-in-a-single-expression-in-python"
+  },
+  {
+    "titulo": "Iterating over a dictionary using a &#39;for&#39; loop, getting keys",
+    "pergunta": "<pre class=\"lang-py prettyprint-override\"><code>d = {'x': 1, 'y': 2, 'z': 3}\n\nfor key in d:\n    print(key, 'corresponds to', d[key])\n</code></pre>\n<p>How does Python recognize that it needs only to read the <code>key</code> from the dictionary? Is <code>key</code> a special keyword, or is it simply a variable?</p>\n",
+    "tags": [
+      "python",
+      "loops",
+      "dictionary",
+      "key"
+    ],
+    "votos": 4428,
+    "link": "https://stackoverflow.com/questions/3294889/iterating-over-a-dictionary-using-a-for-loop-getting-keys"
+  },
+  {
+    "titulo": "How can I add new keys to a dictionary?",
+    "pergunta": "<p>How do I add a new key to an existing dictionary? It doesn't have an <code>.add()</code> method.</p>\n",
+    "tags": [
+      "python",
+      "dictionary",
+      "key",
+      "lookup"
+    ],
+    "votos": 3602,
+    "link": "https://stackoverflow.com/questions/1024847/how-can-i-add-new-keys-to-a-dictionary"
+  },
+  {
+    "titulo": "How do I sort a dictionary by value?",
+    "pergunta": "<p>I have a dictionary of values read from two fields in a database: a string field and a numeric field. The string field is unique, so that is the key of the dictionary.</p>\n\n<p>I can sort on the keys, but how can I sort based on the values?</p>\n\n<p>Note: I have read Stack Overflow question here <em><a href=\"https://stackoverflow.com/questions/72899\">How do I sort a list of dictionaries by a value of the dictionary?</a></em> and probably could change my code to have a list of dictionaries, but since I do not really need a list of dictionaries I wanted to know if there is a simpler solution to sort either in ascending or descending order.</p>\n",
+    "tags": [
+      "python",
+      "sorting",
+      "dictionary"
+    ],
+    "votos": 3413,
+    "link": "https://stackoverflow.com/questions/613183/how-do-i-sort-a-dictionary-by-value"
+  },
+  {
+    "titulo": "How can I remove a key from a Python dictionary?",
+    "pergunta": "<p>I want to remove a key from a dictionary if it is present. I currently use this code:</p>\n<pre class=\"lang-py prettyprint-override\"><code>if key in my_dict:\n    del my_dict[key]\n</code></pre>\n<p>Without the <code>if</code> statement, the code will raise <code>KeyError</code> if the key is <em>not</em> present. How can I handle this more simply?</p>\n<hr />\n<p><sub>See <a href=\"https://stackoverflow.com/questions/5844672\">Delete an element from a dictionary</a> for more general approaches to the problem of removing a key from a dict (including ones which produce a modified copy).</sub></p>\n",
+    "tags": [
+      "python",
+      "dictionary",
+      "unset"
+    ],
+    "votos": 3022,
+    "link": "https://stackoverflow.com/questions/11277432/how-can-i-remove-a-key-from-a-python-dictionary"
+  },
+  {
+    "titulo": "How can I sort a list of dictionaries by a value of the dictionary in Python?",
+    "pergunta": "<p>How do I sort a list of dictionaries by a specific key's value? Given:</p>\n<pre class=\"lang-py prettyprint-override\"><code>[{'name': 'Homer', 'age': 39}, {'name': 'Bart', 'age': 10}]\n</code></pre>\n<p>When sorted by <code>name</code>, it should become:</p>\n<pre class=\"lang-py prettyprint-override\"><code>[{'name': 'Bart', 'age': 10}, {'name': 'Homer', 'age': 39}]\n</code></pre>\n",
+    "tags": [
+      "python",
+      "list",
+      "sorting",
+      "dictionary",
+      "data-structures"
+    ],
+    "votos": 2857,
+    "link": "https://stackoverflow.com/questions/72899/how-can-i-sort-a-list-of-dictionaries-by-a-value-of-the-dictionary-in-python"
+  },
+  {
+    "titulo": "Check if a given key already exists in a dictionary",
+    "pergunta": "<p>I wanted to test if a key exists in a dictionary before updating the value for the key.\nI wrote the following code:</p>\n\n<pre><code>if 'key1' in dict.keys():\n  print \"blah\"\nelse:\n  print \"boo\"\n</code></pre>\n\n<p>I think this is not the best way to accomplish this task. Is there a better way to test for a key in the dictionary?</p>\n",
+    "tags": [
+      "python",
+      "dictionary"
+    ],
+    "votos": 2675,
+    "link": "https://stackoverflow.com/questions/1602934/check-if-a-given-key-already-exists-in-a-dictionary"
+  },
+  {
+    "titulo": "Delete an element from a dictionary",
+    "pergunta": "<ol>\n<li>How do I delete an item from a dictionary in Python?</li>\n<li><strong>Without</strong> modifying the original dictionary, how do I obtain <strong>another</strong> dictionary with the item removed?</li>\n</ol>\n<hr />\n<p><sub>See also <a href=\"https://stackoverflow.com/questions/11277432\">How can I remove a key from a Python dictionary?</a> for the specific issue of removing an item (by key) that may not already be present.</sub></p>\n",
+    "tags": [
+      "python",
+      "dictionary",
+      "del"
+    ],
+    "votos": 2247,
+    "link": "https://stackoverflow.com/questions/5844672/delete-an-element-from-a-dictionary"
+  },
+  {
+    "titulo": "Determine the type of an object?",
+    "pergunta": "<p>Is there a simple way to determine if a variable is a list, dictionary, or something else?</p>\n",
+    "tags": [
+      "python",
+      "dictionary",
+      "types",
+      "typeof"
+    ],
+    "votos": 2231,
+    "link": "https://stackoverflow.com/questions/2225038/determine-the-type-of-an-object"
+  },
+  {
+    "titulo": "How do I count the occurrences of a list item?",
+    "pergunta": "<p>Given a single item, how do I count occurrences of it in a list, in Python?</p>\n<hr />\n<p><sub>A related but different problem is counting occurrences of <strong>each different element</strong> in a collection, getting a dictionary or list as a histogram result instead of a single integer. For that problem, see <a href=\"https://stackoverflow.com/questions/3496518\">Using a dictionary to count the items in a list</a>.</sub></p>\n",
+    "tags": [
+      "python",
+      "list",
+      "count"
+    ],
+    "votos": 2227,
+    "link": "https://stackoverflow.com/questions/2600191/how-do-i-count-the-occurrences-of-a-list-item"
+  }
+]
