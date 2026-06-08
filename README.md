@@ -1,6 +1,7 @@
 # 🤖 ia-devassist
 
-> Assistente técnico de programação baseado em sistema multiagente com LLMs locais, RAG e MCP.
+> Assistente técnico de programação com sistema multiagente, LLMs locais, RAG e MCP.  
+> Responde dúvidas sobre Python diretamente no terminal — sem internet, sem API paga.
 
 ---
 
@@ -12,102 +13,116 @@
 
 ---
 
-## 📌 Problema
+## 📌 O Problema
 
-Desenvolvedores perdem muito tempo buscando respostas técnicas espalhadas entre documentações oficiais e fóruns como o Stack Overflow. O **ia-devassist** resolve isso com um sistema multiagente que recupera trechos relevantes de uma base de conhecimento local (documentação Python/LangChain + Stack Overflow) e sintetiza uma resposta clara e explicada diretamente no terminal.
+Desenvolvedores perdem muito tempo buscando respostas técnicas espalhadas entre documentações oficiais e fóruns. O **ia-devassist** resolve isso: um sistema multiagente que recupera trechos relevantes de uma base de conhecimento local (documentação Python + Stack Overflow) e sintetiza uma resposta clara diretamente no terminal.
 
 ---
 
 ## 🎯 Objetivo
 
-Construir uma aplicação em que múltiplos agentes baseados em LLMs atuem de forma coordenada para responder dúvidas técnicas de programação, utilizando recuperação de contexto (RAG), ferramentas acionáveis (tools) e comunicação padronizada entre agentes e recursos externos (MCP).
+Construir uma aplicação onde múltiplos agentes baseados em LLMs atuem de forma coordenada para responder dúvidas técnicas de programação, utilizando:
+- **RAG** para recuperação de contexto relevante
+- **Tools** como ferramentas acionáveis pelos agentes
+- **MCP** para padronizar a comunicação entre agentes e ferramentas
+- **Modelos locais** via Ollama — sem dependência de APIs externas
 
 ---
 
 ## 🏗️ Arquitetura Multiagente
 
-O sistema é composto por três agentes com responsabilidades distintas que cooperam em sequência:
+O sistema possui **3 agentes** que cooperam em sequência a cada pergunta:
 
 ```
 Usuário (terminal)
       │
       ▼
 ┌─────────────────────┐
-│  Agente Recuperador │  ← busca contexto relevante na base vetorial
+│  Agente Recuperador │  ← busca contexto relevante no ChromaDB via MCP
 └─────────┬───────────┘
           │  contextos recuperados
           ▼
 ┌──────────────────────┐
-│ Agente Sintetizador  │  ← gera resposta com LLM local (Ollama)
+│ Agente Sintetizador  │  ← gera resposta usando LLaMA 3.2 (Ollama)
 └─────────┬────────────┘
           │  resposta gerada
           ▼
 ┌─────────────────────┐
-│   Agente Revisor    │  ← verifica coerência; rejeita se necessário
+│   Agente Revisor    │  ← verifica coerência; pede nova geração se reprovar
 └─────────┬───────────┘
           │  resposta aprovada
           ▼
-     Terminal + histórico
+   Terminal + histórico local
 ```
 
 ### Papel de cada agente
 
-| Agente | Responsabilidade |
-|---|---|
-| **Recuperador** | Recebe a pergunta do usuário e busca os trechos mais relevantes no banco vetorial via `buscar_documentacao()` e `buscar_stackoverflow()` |
-| **Sintetizador** | Recebe a pergunta + contextos e gera uma resposta clara com exemplo de código quando aplicável, usando o LLM local |
-| **Revisor** | Verifica se a resposta é coerente com os contextos recuperados via `verificar_coerencia()`; se não, solicita nova geração |
+| Agente | Arquivo | Responsabilidade |
+|---|---|---|
+| **Recuperador** | `agents/recuperador.py` | Busca os trechos mais relevantes no banco vetorial para a pergunta do usuário |
+| **Sintetizador** | `agents/sintetizador.py` | Recebe a pergunta + contextos e gera uma resposta com o LLM local |
+| **Revisor** | `agents/revisor.py` | Avalia se a resposta é coerente com os contextos; rejeita e pede nova geração se necessário |
 
 ---
 
 ## 🛠️ Tools Disponíveis
 
-| Tool | Descrição |
-|---|---|
-| `buscar_documentacao(query)` | Busca semântica na base vetorial com a documentação do Python e LangChain. Retorna os 3 trechos mais relevantes. |
-| `buscar_stackoverflow(query)` | Busca semântica na base vetorial com perguntas e respostas do Stack Overflow filtradas por Python. |
-| `verificar_coerencia(resposta, contextos)` | Compara a resposta gerada com os contextos e retorna um score de coerência. Usado pelo Agente Revisor. |
-| `salvar_historico(pergunta, resposta)` | Salva a conversa em um arquivo local de histórico para consulta posterior. |
+Os agentes não chamam funções diretamente — acessam tudo via **servidor MCP**.
+
+| Tool | Arquivo | O que faz |
+|---|---|---|
+| `buscar_documentacao(query)` | `tools/buscar_documentacao.py` | Busca semântica na documentação oficial do Python indexada localmente |
+| `buscar_stackoverflow(query)` | `tools/buscar_stackoverflow.py` | Busca semântica nas perguntas do Stack Overflow indexadas localmente |
+| `verificar_coerencia(resposta, contextos)` | `tools/verificar_coerencia.py` | Verifica se a resposta gerada é coerente com os contextos recuperados |
+| `salvar_historico(pergunta, resposta)` | `tools/salvar_historico.py` | Salva a conversa em `historico.json` para consulta posterior |
 
 ---
 
-## 🔗 Uso do MCP (Model Context Protocol)
+## 🔗 MCP — Model Context Protocol
 
-O MCP é utilizado para padronizar a comunicação entre os agentes e as tools. Cada ferramenta é exposta como um recurso MCP, e os agentes acessam essas ferramentas por meio do protocolo, sem chamá-las diretamente. Isso desacopla a lógica dos agentes da implementação das ferramentas e facilita a extensão do sistema.
+O MCP (`mcp/servidor_mcp.py`) é a camada que padroniza a comunicação entre agentes e tools. Em vez de os agentes chamarem as funções diretamente, tudo passa pelo servidor MCP, que:
+
+- Registra e expõe todas as tools disponíveis
+- Valida os parâmetros antes de executar
+- Retorna resultados padronizados com `sucesso` e `resultado`
+- Facilita adicionar novas tools sem alterar os agentes
 
 ---
 
-## 📚 Estratégia de RAG
+## 📚 RAG — Retrieval-Augmented Generation
 
-O sistema utiliza **Retrieval-Augmented Generation (RAG)** para enriquecer o contexto dos agentes antes da geração de resposta:
+Antes de gerar qualquer resposta, o sistema **recupera contexto relevante** da base de conhecimento local:
 
-1. Os documentos da base de conhecimento são divididos em chunks de ~500 tokens com sobreposição de 50 tokens
-2. Cada chunk é transformado em um embedding via `nomic-embed-text` (Ollama)
-3. Os embeddings são armazenados no ChromaDB
-4. Na consulta, a pergunta do usuário é transformada em embedding e comparada com os chunks armazenados via similaridade de cosseno
-5. Os N chunks mais relevantes são injetados no prompt do Agente Sintetizador como contexto
+1. Os documentos em `data/` são divididos em chunks de 500 tokens (overlap de 50)
+2. Cada chunk é transformado em embedding via `nomic-embed-text` (Ollama)
+3. Os embeddings são indexados no ChromaDB
+4. Na consulta, a pergunta vira embedding e é comparada por similaridade de cosseno
+5. Os 4 chunks mais similares são injetados no prompt do Sintetizador como contexto
 
 ---
 
 ## 🗂️ Base de Conhecimento
 
-| Fonte | Conteúdo | Formato | Acesso |
-|---|---|---|---|
-| [Documentação oficial Python](https://docs.python.org/3/) | Referência completa da linguagem | HTML/texto | Gratuito |
-| [Documentação LangChain](https://python.langchain.com/docs/) | Guias e referência da lib | HTML/texto | Gratuito |
-| [Stack Overflow Data Dump](https://archive.org/details/stackexchange) | Perguntas e respostas filtradas por Python | XML/texto | Gratuito |
+| Fonte | O que contém | Chunks indexados |
+|---|---|---|
+| [docs.python.org](https://docs.python.org/3/) | Built-ins, classes, exceções, módulos, I/O, decorators, generators | ~1.000 |
+| [Stack Overflow](https://stackoverflow.com/) | Perguntas e respostas reais filtradas por Python | ~380 |
 
-Os documentos são processados e armazenados localmente em `data/` antes da indexação.
+**Total: 1.378 chunks** armazenados no ChromaDB em `rag/chroma_db/`.
+
+Os documentos ficam em `data/docs_python/` (HTML) e `data/stackoverflow/` (JSON).  
+Para baixar novamente: `python3 data/baixar_docs.py`
 
 ---
 
-## 🧠 Embeddings e Armazenamento Vetorial
+## 🧠 Embeddings e Banco Vetorial
 
 | Item | Tecnologia |
 |---|---|
-| Modelo de embeddings | `nomic-embed-text` via Ollama (local, sem custo) |
+| Modelo de embeddings | `nomic-embed-text` via Ollama (local, gratuito) |
 | Banco vetorial | ChromaDB (local, sem servidor externo) |
-| Estratégia de chunking | RecursiveCharacterTextSplitter — 500 tokens, overlap 50 |
+| Chunking | `RecursiveCharacterTextSplitter` — 500 tokens, overlap 50 |
+| Similaridade | Cosseno (padrão ChromaDB) |
 
 ---
 
@@ -116,8 +131,9 @@ Os documentos são processados e armazenados localmente em `data/` antes da inde
 | Item | Detalhe |
 |---|---|
 | Ferramenta | [Ollama](https://ollama.com) |
-| Modelo | `llama3.2:3b` |
-| Justificativa | Modelo leve (3B parâmetros), roda em hardware comum sem GPU dedicada, gratuito e de código aberto |
+| Modelo LLM | `llama3.2:3b` |
+| Modelo Embeddings | `nomic-embed-text` |
+| Justificativa | Leve (3B parâmetros), roda em hardware comum sem GPU dedicada, 100% offline após download |
 
 ---
 
@@ -127,86 +143,120 @@ Os documentos são processados e armazenados localmente em `data/` antes da inde
 langchain
 langchain-community
 langchain-ollama
+langchain-chroma
 chromadb
-ollama
-mcp
+beautifulsoup4
+requests
 python-dotenv
-```
-
-Instale com:
-
-```bash
-pip install -r requirements.txt
 ```
 
 ---
 
-## ⚙️ Instalação e Configuração
+## ⚙️ Instalação — Passo a Passo
 
-### 1. Clone o repositório
+> Testado no macOS. Funciona também no Linux e Windows.
+
+### 1. Pré-requisitos
+
+- Python 3.10 ou superior
+- [Ollama](https://ollama.com) instalado
+
+### 2. Clone o repositório
 
 ```bash
 git clone https://github.com/fabiosantos/ia-devassist.git
 cd ia-devassist
 ```
 
-### 2. Instale o Ollama
+### 3. Instale as dependências Python
 
-Acesse [ollama.com](https://ollama.com) e instale para o seu sistema operacional. Em seguida, baixe os modelos necessários:
+```bash
+pip install langchain langchain-community langchain-ollama langchain-chroma chromadb beautifulsoup4 requests python-dotenv
+```
+
+### 4. Baixe os modelos no Ollama
 
 ```bash
 ollama pull llama3.2:3b
 ollama pull nomic-embed-text
 ```
 
-### 3. Instale as dependências Python
+> O download pode demorar alguns minutos dependendo da sua conexão.  
+> Após isso, tudo funciona **sem internet**.
+
+### 5. Baixe a base de conhecimento
 
 ```bash
-pip install -r requirements.txt
+python3 data/baixar_docs.py
 ```
 
-### 4. Indexe a base de conhecimento
+Isso baixa a documentação do Python e perguntas do Stack Overflow para `data/`.
+
+### 6. Indexe a base de conhecimento
 
 ```bash
-python rag/indexar.py
+python3 rag/indexar.py
 ```
 
-Este script processa os documentos em `data/`, gera os embeddings e salva o banco vetorial em `rag/chroma_db/`.
+Gera os embeddings e salva o banco vetorial em `rag/chroma_db/`.  
+> Demora alguns minutos na primeira execução.
 
 ---
 
 ## ▶️ Execução
 
 ```bash
-python main.py
+python3 main.py
 ```
 
-O sistema iniciará no terminal com um prompt interativo:
+O terminal vai inicializar os agentes e abrir o prompt interativo:
 
 ```
-🤖 ia-devassist — Assistente Técnico de Programação
-Digite sua pergunta (ou 'sair' para encerrar):
+╔══════════════════════════════════════════════╗
+║       🤖  ia-devassist  v1.0               ║
+║   Assistente Técnico de Programação         ║
+║   Powered by LLaMA 3.2 + RAG + MCP         ║
+╚══════════════════════════════════════════════╝
 
-> Como usar list comprehension em Python?
+⏳ Inicializando agentes...
+✅ Agentes prontos! Pode fazer sua pergunta.
+
+🧑 Você: Como usar list comprehension em Python?
 
 [Recuperador] Buscando contexto relevante...
 [Sintetizador] Gerando resposta...
 [Revisor] Verificando coerência...
+[Revisor] ✅ Aprovada
 
-✅ Resposta:
-List comprehension é uma forma concisa de criar listas em Python...
+🤖 ia-devassist:
+────────────────────────────────────────────────
+List comprehension é uma forma compacta de criar listas em Python.
+Exemplo: numeros_pares = [x for x in range(10) if x % 2 == 0]
+...
+────────────────────────────────────────────────
 ```
+
+### Comandos especiais
+
+| Comando | O que faz |
+|---|---|
+| `historico` | Exibe as últimas 5 perguntas feitas |
+| `limpar` | Limpa a tela do terminal |
+| `sair` | Encerra o programa |
 
 ---
 
-## 💬 Exemplos de Uso
+## 💬 Exemplos de Perguntas
 
-```bash
-> Como funciona o decorator @property no Python?
-> Qual a diferença entre append e extend em listas?
-> Como criar um agente com LangChain?
-> O que é um vector store e como usar com ChromaDB?
-> Como fazer tratamento de exceções em Python?
+```
+Como usar decorators em Python?
+Qual a diferença entre list e tuple?
+Como funciona o gerenciamento de exceções?
+O que é um generator e quando usar?
+Como ler e escrever arquivos em Python?
+Qual a diferença entre append e extend?
+Como usar context managers com with?
+O que é herança em orientação a objetos?
 ```
 
 ---
@@ -216,26 +266,28 @@ List comprehension é uma forma concisa de criar listas em Python...
 ```
 ia-devassist/
 ├── agents/
-│   ├── recuperador.py
-│   ├── sintetizador.py
-│   └── revisor.py
+│   ├── recuperador.py       ← Agente de busca vetorial
+│   ├── sintetizador.py      ← Agente gerador de respostas (LLM)
+│   └── revisor.py           ← Agente de revisão de coerência
 ├── tools/
 │   ├── buscar_documentacao.py
 │   ├── buscar_stackoverflow.py
 │   ├── verificar_coerencia.py
 │   └── salvar_historico.py
 ├── rag/
-│   ├── indexar.py
-│   └── chroma_db/
+│   ├── indexar.py           ← Script de indexação da base
+│   └── chroma_db/           ← Banco vetorial (gerado automaticamente)
 ├── mcp/
-│   └── servidor_mcp.py
+│   └── servidor_mcp.py      ← Servidor MCP com registro de tools
 ├── data/
-│   ├── docs_python/
-│   └── stackoverflow/
+│   ├── baixar_docs.py       ← Script para baixar a base de conhecimento
+│   ├── docs_python/         ← Documentação oficial do Python (HTML)
+│   └── stackoverflow/       ← Perguntas do Stack Overflow (JSON)
 ├── tests/
 │   └── test_agentes.py
-├── main.py
+├── main.py                  ← Ponto de entrada — interface CLI
 ├── requirements.txt
+├── historico.json           ← Gerado automaticamente ao usar o sistema
 └── README.md
 ```
 
@@ -244,4 +296,4 @@ ia-devassist/
 ## 🎓 Disciplina
 
 **Inteligência Artificial** — Universidade de Passo Fundo (UPF)  
-Prof. Diego A. Lusa · Prof. Roberto Rabello · 2025
+Prof. Diego A. Lusa · Prof. Roberto Rabello · 2025/1
