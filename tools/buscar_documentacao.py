@@ -4,12 +4,13 @@ Busca trechos relevantes na documentacao oficial do Python.
 """
 
 import logging
+from typing import Dict, List, Optional
 
 from agents.recuperador import AgenteRecuperador
 
 logger = logging.getLogger(__name__)
 
-_recuperador: AgenteRecuperador | None = None
+_recuperador: Optional[AgenteRecuperador] = None
 
 
 def get_recuperador() -> AgenteRecuperador:
@@ -28,7 +29,7 @@ def get_recuperador() -> AgenteRecuperador:
     return _recuperador
 
 
-def buscar_documentacao(query: str) -> list[dict[str, str]]:
+def buscar_documentacao(query: str) -> List[Dict[str, str]]:
     """Busca trechos relevantes na documentacao oficial do Python.
 
     Args:

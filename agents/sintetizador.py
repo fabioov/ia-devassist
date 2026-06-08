@@ -4,14 +4,10 @@ Gera a resposta final a partir da pergunta do usuario e dos contextos
 recuperados.
 """
 
-import logging
-
 from langchain.prompts import PromptTemplate
 from langchain_ollama import OllamaLLM
 
 from config import LLM_MODEL
-
-logger = logging.getLogger(__name__)
 
 PROMPT_TEMPLATE = """Você é um assistente técnico especializado em programação Python.
 Use apenas os contextos abaixo para responder a pergunta do usuário.
@@ -43,7 +39,6 @@ class AgenteSintetizador:
         Returns:
             None.
         """
-        logger.info("Conectando ao modelo local %s.", LLM_MODEL)
         try:
             self.llm = OllamaLLM(model=LLM_MODEL)
             self.prompt = PromptTemplate(
@@ -94,7 +89,6 @@ class AgenteSintetizador:
             contextos.get("stackoverflow", [])
         )
 
-        logger.info("Gerando resposta com o modelo local.")
         try:
             resposta = self.chain.invoke(
                 {

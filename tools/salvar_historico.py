@@ -7,13 +7,14 @@ import json
 import logging
 from datetime import datetime
 from json import JSONDecodeError
+from typing import Dict, List, Union
 
 from config import HISTORICO_PATH
 
 logger = logging.getLogger(__name__)
 
 
-def _carregar_historico() -> list[dict[str, str]]:
+def _carregar_historico() -> List[Dict[str, str]]:
     """Carrega o historico do disco quando disponivel."""
     if not HISTORICO_PATH.exists():
         return []
@@ -36,7 +37,10 @@ def _carregar_historico() -> list[dict[str, str]]:
         ) from exc
 
 
-def salvar_historico(pergunta: str, resposta: str) -> dict[str, int | bool]:
+def salvar_historico(
+    pergunta: str,
+    resposta: str,
+) -> Dict[str, Union[int, bool]]:
     """Salva uma nova entrada no historico local.
 
     Args:
@@ -51,7 +55,7 @@ def salvar_historico(pergunta: str, resposta: str) -> dict[str, int | bool]:
     if not resposta.strip():
         raise ValueError("A resposta do historico nao pode estar vazia.")
 
-    historico: list[dict[str, str]] = []
+    historico: List[Dict[str, str]] = []
     if HISTORICO_PATH.exists():
         try:
             historico = _carregar_historico()
@@ -83,7 +87,7 @@ def salvar_historico(pergunta: str, resposta: str) -> dict[str, int | bool]:
     return {"sucesso": True, "total_entradas": len(historico)}
 
 
-def listar_historico() -> list[dict[str, str]]:
+def listar_historico() -> List[Dict[str, str]]:
     """Lista todas as entradas do historico local.
 
     Args:

@@ -4,14 +4,12 @@ Recupera trechos relevantes do banco vetorial a partir da pergunta do
 usuario.
 """
 
-import logging
+from typing import Dict, List, Optional
 
 from langchain_chroma import Chroma
 from langchain_ollama import OllamaEmbeddings
 
 from config import CHROMA_COLLECTION, CHROMA_DIR, EMBEDDING_MODEL, N_RESULTADOS
-
-logger = logging.getLogger(__name__)
 
 
 class AgenteRecuperador:
@@ -26,7 +24,6 @@ class AgenteRecuperador:
         Returns:
             None.
         """
-        logger.info("Conectando ao banco vetorial em %s.", CHROMA_DIR)
         try:
             embeddings = OllamaEmbeddings(model=EMBEDDING_MODEL)
             self.vectorstore = Chroma(
@@ -43,8 +40,8 @@ class AgenteRecuperador:
     def buscar(
         self,
         pergunta: str,
-        fonte: str | None = None,
-    ) -> list[dict[str, str]]:
+        fonte: Optional[str] = None,
+    ) -> List[Dict[str, str]]:
         """Busca os chunks mais relevantes para a pergunta.
 
         Args:
@@ -72,7 +69,7 @@ class AgenteRecuperador:
             for doc in resultados
         ]
 
-    def buscar_todos(self, pergunta: str) -> dict[str, list[dict[str, str]]]:
+    def buscar_todos(self, pergunta: str) -> Dict[str, List[Dict[str, str]]]:
         """Busca contextos nas duas fontes indexadas.
 
         Args:
@@ -81,15 +78,8 @@ class AgenteRecuperador:
         Returns:
             Dicionario com resultados separados por origem.
         """
-        logger.info("Buscando contexto para a pergunta recebida.")
         docs = self.buscar(pergunta, fonte="docs_python")
         stackoverflow = self.buscar(pergunta, fonte="stackoverflow")
-        logger.info(
-            "Recuperacao concluida com %s resultado(s) da documentacao e "
-            "%s do Stack Overflow.",
-            len(docs),
-            len(stackoverflow),
-        )
         return {
             "docs_python": docs,
             "stackoverflow": stackoverflow,

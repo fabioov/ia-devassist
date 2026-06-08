@@ -5,15 +5,13 @@ recuperados.
 """
 
 import json
-import logging
 from json import JSONDecodeError
+from typing import Dict, List, Union
 
 from langchain.prompts import PromptTemplate
 from langchain_ollama import OllamaLLM
 
 from config import LLM_MODEL
-
-logger = logging.getLogger(__name__)
 
 PROMPT_REVISAO = """Você é um revisor técnico rigoroso.
 Avalie se a RESPOSTA abaixo é coerente com os CONTEXTOS fornecidos.
@@ -42,7 +40,6 @@ class AgenteRevisor:
         Returns:
             None.
         """
-        logger.info("Inicializando o revisor com o modelo %s.", LLM_MODEL)
         try:
             self.llm = OllamaLLM(model=LLM_MODEL)
             self.prompt = PromptTemplate(
@@ -58,10 +55,10 @@ class AgenteRevisor:
 
     def _formatar_contextos(
         self,
-        contextos: dict[str, list[dict[str, str]]],
+        contextos: Dict[str, List[Dict[str, str]]],
     ) -> str:
         """Consolida os contextos em um unico bloco de texto."""
-        partes: list[str] = []
+        partes: List[str] = []
         for contexto in contextos.get("docs_python", []):
             partes.append(contexto["texto"][:300])
         for contexto in contextos.get("stackoverflow", []):
@@ -71,8 +68,8 @@ class AgenteRevisor:
     def revisar(
         self,
         resposta: str,
-        contextos: dict[str, list[dict[str, str]]],
-    ) -> dict[str, bool | str]:
+        contextos: Dict[str, List[Dict[str, str]]],
+    ) -> Dict[str, Union[bool, str]]:
         """Revisa a resposta gerada.
 
         Args:
@@ -86,7 +83,6 @@ class AgenteRevisor:
             raise ValueError("A resposta para revisao nao pode estar vazia.")
 
         contextos_texto = self._formatar_contextos(contextos)
-        logger.info("Verificando coerencia da resposta.")
         try:
             resultado_bruto = self.chain.invoke(
                 {
@@ -105,7 +101,7 @@ class AgenteRevisor:
     def _interpretar_resultado(
         self,
         resultado_bruto: str,
-    ) -> dict[str, bool | str]:
+    ) -> Dict[str, Union[bool, str]]:
         """Interpreta o JSON retornado pelo modelo revisor."""
         try:
             return json.loads(resultado_bruto)
@@ -113,10 +109,6 @@ class AgenteRevisor:
             inicio = resultado_bruto.find("{")
             fim = resultado_bruto.rfind("}") + 1
             if inicio == -1 or fim <= 0:
-                logger.warning(
-                    "Revisor retornou conteudo sem JSON valido. "
-                    "Aprovacao padrao aplicada."
-                )
                 return {
                     "aprovado": True,
                     "motivo": "Nao foi possivel avaliar automaticamente.",
@@ -125,10 +117,6 @@ class AgenteRevisor:
             try:
                 return json.loads(resultado_bruto[inicio:fim])
             except (JSONDecodeError, TypeError, ValueError):
-                logger.warning(
-                    "Falha ao interpretar a resposta do revisor. "
-                    "Aprovacao padrao aplicada."
-                )
                 return {
                     "aprovado": True,
                     "motivo": "Nao foi possivel avaliar automaticamente.",

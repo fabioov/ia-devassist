@@ -5,12 +5,13 @@ recuperados.
 """
 
 import logging
+from typing import Dict, List, Optional, Union
 
 from agents.revisor import AgenteRevisor
 
 logger = logging.getLogger(__name__)
 
-_revisor: AgenteRevisor | None = None
+_revisor: Optional[AgenteRevisor] = None
 
 
 def get_revisor() -> AgenteRevisor:
@@ -31,8 +32,8 @@ def get_revisor() -> AgenteRevisor:
 
 def verificar_coerencia(
     resposta: str,
-    contextos: dict[str, list[dict[str, str]]],
-) -> dict[str, bool | str]:
+    contextos: Dict[str, List[Dict[str, str]]],
+) -> Dict[str, Union[bool, str]]:
     """Verifica se a resposta gerada e coerente com os contextos.
 
     Args:

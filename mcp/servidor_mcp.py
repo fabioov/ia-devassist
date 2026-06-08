@@ -3,7 +3,7 @@
 Centraliza o registro e a execucao das tools internas do projeto.
 """
 
-from typing import Any, Callable
+from typing import Any, Callable, Dict, List, Union
 
 from tools.salvar_historico import listar_historico, salvar_historico
 
@@ -25,7 +25,7 @@ class ServidorMCP:
         self._recuperador: Any = None
         self._sintetizador: Any = None
         self._revisor: Any = None
-        self._tools: dict[str, dict[str, Any]] = {}
+        self._tools: Dict[str, Dict[str, Any]] = {}
 
     def init(self, recuperador: Any, sintetizador: Any, revisor: Any) -> None:
         """Recebe instancias prontas dos agentes e registra as tools.
@@ -73,13 +73,13 @@ class ServidorMCP:
             },
         }
 
-    def _buscar_documentacao(self, query: str) -> list[dict[str, str]]:
+    def _buscar_documentacao(self, query: str) -> List[Dict[str, str]]:
         """Executa a busca na documentacao oficial."""
         if self._recuperador is None:
             raise RuntimeError("Agente recuperador nao foi inicializado.")
         return self._recuperador.buscar(query, fonte="docs_python")
 
-    def _buscar_stackoverflow(self, query: str) -> list[dict[str, str]]:
+    def _buscar_stackoverflow(self, query: str) -> List[Dict[str, str]]:
         """Executa a busca na base local do Stack Overflow."""
         if self._recuperador is None:
             raise RuntimeError("Agente recuperador nao foi inicializado.")
@@ -88,14 +88,14 @@ class ServidorMCP:
     def _verificar_coerencia(
         self,
         resposta: str,
-        contextos: dict[str, list[dict[str, str]]],
-    ) -> dict[str, bool | str]:
+        contextos: Dict[str, List[Dict[str, str]]],
+    ) -> Dict[str, Union[bool, str]]:
         """Executa a revisao de coerencia com o agente revisor."""
         if self._revisor is None:
             raise RuntimeError("Agente revisor nao foi inicializado.")
         return self._revisor.revisar(resposta, contextos)
 
-    def listar_tools(self) -> list[dict[str, Any]]:
+    def listar_tools(self) -> List[Dict[str, Any]]:
         """Lista os metadados das tools registradas.
 
         Args:
@@ -113,7 +113,7 @@ class ServidorMCP:
             for nome, info in self._tools.items()
         ]
 
-    def executar(self, nome_tool: str, parametros: dict[str, Any]) -> dict[str, Any]:
+    def executar(self, nome_tool: str, parametros: Dict[str, Any]) -> Dict[str, Any]:
         """Executa uma tool registrada com os parametros informados.
 
         Args:
