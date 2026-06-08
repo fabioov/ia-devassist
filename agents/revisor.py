@@ -1,21 +1,25 @@
-"""
-Agente Revisor — ia-devassist
-Verifica se a resposta gerada pelo Sintetizador é coerente
-com os contextos recuperados. Se não for, solicita nova geração.
+"""Agente Revisor - ia-devassist
+
+Avalia se a resposta gerada esta coerente com os contextos
+recuperados.
 """
 
-from langchain_ollama import OllamaLLM
+import json
+import logging
+from json import JSONDecodeError
+
 from langchain.prompts import PromptTemplate
+from langchain_ollama import OllamaLLM
 
-# ── Configuração ──────────────────────────────
-LLM_MODEL    = "llama3.2:3b"
-MAX_TENTATIVAS = 2  # quantas vezes tenta regenerar se reprovar
+from config import LLM_MODEL
+
+logger = logging.getLogger(__name__)
 
 PROMPT_REVISAO = """Você é um revisor técnico rigoroso.
 Avalie se a RESPOSTA abaixo é coerente com os CONTEXTOS fornecidos.
 
 Responda APENAS com um JSON no seguinte formato, sem texto adicional:
-{{"aprovado": true ou false, "motivo": "explicação curta"}}
+{{"aprovado": true ou false, "motivo": "explicacao curta"}}
 
 === CONTEXTOS ===
 {contextos}
@@ -27,90 +31,105 @@ Responda APENAS com um JSON no seguinte formato, sem texto adicional:
 
 
 class AgenteRevisor:
-    """
-    Agente responsável por revisar a coerência da resposta.
-    Aprova ou rejeita com base nos contextos recuperados.
-    Se rejeitar, sinaliza para o Sintetizador gerar novamente.
-    """
+    """Valida a coerencia entre a resposta e os contextos usados."""
 
-    def __init__(self):
-        print("[Revisor] Inicializando...")
-        self.llm = OllamaLLM(model=LLM_MODEL)
-        self.prompt = PromptTemplate(
-            input_variables=["contextos", "resposta"],
-            template=PROMPT_REVISAO,
-        )
-        self.chain = self.prompt | self.llm
-        print("[Revisor] Pronto.\n")
-
-    def _formatar_contextos(self, contextos: dict) -> str:
-        """Junta todos os contextos em um bloco de texto."""
-        partes = []
-        for ctx in contextos.get("docs_python", []):
-            partes.append(ctx["texto"][:300])
-        for ctx in contextos.get("stackoverflow", []):
-            partes.append(ctx["texto"][:300])
-        return "\n---\n".join(partes)
-
-    def revisar(self, resposta: str, contextos: dict) -> dict:
-        """
-        Revisa a resposta gerada.
+    def __init__(self) -> None:
+        """Inicializa o modelo usado para revisar respostas.
 
         Args:
-            resposta:  Texto gerado pelo Sintetizador.
-            contextos: Dict com 'docs_python' e 'stackoverflow'.
+            Nenhum.
 
         Returns:
-            Dict com 'aprovado' (bool) e 'motivo' (str).
+            None.
         """
-        import json
+        logger.info("Inicializando o revisor com o modelo %s.", LLM_MODEL)
+        try:
+            self.llm = OllamaLLM(model=LLM_MODEL)
+            self.prompt = PromptTemplate(
+                input_variables=["contextos", "resposta"],
+                template=PROMPT_REVISAO,
+            )
+            self.chain = self.prompt | self.llm
+        except (OSError, RuntimeError, ValueError) as exc:
+            raise RuntimeError(
+                "Nao foi possivel inicializar o agente revisor. Verifique "
+                "se o Ollama esta disponivel."
+            ) from exc
 
-        print("[Revisor] Verificando coerência da resposta...")
+    def _formatar_contextos(
+        self,
+        contextos: dict[str, list[dict[str, str]]],
+    ) -> str:
+        """Consolida os contextos em um unico bloco de texto."""
+        partes: list[str] = []
+        for contexto in contextos.get("docs_python", []):
+            partes.append(contexto["texto"][:300])
+        for contexto in contextos.get("stackoverflow", []):
+            partes.append(contexto["texto"][:300])
+        return "\n---\n".join(partes)
+
+    def revisar(
+        self,
+        resposta: str,
+        contextos: dict[str, list[dict[str, str]]],
+    ) -> dict[str, bool | str]:
+        """Revisa a resposta gerada.
+
+        Args:
+            resposta: Texto gerado pelo sintetizador.
+            contextos: Contextos agrupados por fonte.
+
+        Returns:
+            Dict com 'aprovado' e 'motivo'.
+        """
+        if not resposta.strip():
+            raise ValueError("A resposta para revisao nao pode estar vazia.")
 
         contextos_texto = self._formatar_contextos(contextos)
-
-        resultado_bruto = self.chain.invoke({
-            "contextos": contextos_texto,
-            "resposta":  resposta,
-        })
-
-        # Tenta extrair o JSON da resposta
+        logger.info("Verificando coerencia da resposta.")
         try:
-            # Procura pelo bloco JSON na resposta
+            resultado_bruto = self.chain.invoke(
+                {
+                    "contextos": contextos_texto,
+                    "resposta": resposta,
+                }
+            )
+        except (OSError, RuntimeError, ValueError) as exc:
+            raise RuntimeError(
+                "Falha ao revisar a resposta com o modelo local. Tente "
+                "novamente apos validar a disponibilidade do Ollama."
+            ) from exc
+
+        return self._interpretar_resultado(str(resultado_bruto))
+
+    def _interpretar_resultado(
+        self,
+        resultado_bruto: str,
+    ) -> dict[str, bool | str]:
+        """Interpreta o JSON retornado pelo modelo revisor."""
+        try:
+            return json.loads(resultado_bruto)
+        except JSONDecodeError:
             inicio = resultado_bruto.find("{")
-            fim    = resultado_bruto.rfind("}") + 1
-            json_str = resultado_bruto[inicio:fim]
-            resultado = json.loads(json_str)
-        except Exception:
-            # Se não conseguir parsear, aprova por padrão
-            resultado = {"aprovado": True, "motivo": "Não foi possível avaliar — aprovado por padrão."}
+            fim = resultado_bruto.rfind("}") + 1
+            if inicio == -1 or fim <= 0:
+                logger.warning(
+                    "Revisor retornou conteudo sem JSON valido. "
+                    "Aprovacao padrao aplicada."
+                )
+                return {
+                    "aprovado": True,
+                    "motivo": "Nao foi possivel avaliar automaticamente.",
+                }
 
-        aprovado = resultado.get("aprovado", True)
-        motivo   = resultado.get("motivo", "")
-
-        status = "✅ Aprovada" if aprovado else "❌ Reprovada"
-        print(f"[Revisor] {status} — {motivo}\n")
-
-        return resultado
-
-
-# ── Teste rápido ──────────────────────────────
-if __name__ == "__main__":
-    from agents.recuperador  import AgenteRecuperador
-    from agents.sintetizador import AgenteSintetizador
-
-    pergunta = "Como usar list comprehension em Python?"
-
-    recuperador  = AgenteRecuperador()
-    sintetizador = AgenteSintetizador()
-    revisor      = AgenteRevisor()
-
-    contextos = recuperador.buscar_todos(pergunta)
-    resposta  = sintetizador.gerar(pergunta, contextos)
-    avaliacao = revisor.revisar(resposta, contextos)
-
-    print("── Resposta ──────────────────────────────")
-    print(resposta)
-    print("\n── Avaliação do Revisor ──────────────────")
-    print(f"Aprovado: {avaliacao['aprovado']}")
-    print(f"Motivo:   {avaliacao['motivo']}")
+            try:
+                return json.loads(resultado_bruto[inicio:fim])
+            except (JSONDecodeError, TypeError, ValueError):
+                logger.warning(
+                    "Falha ao interpretar a resposta do revisor. "
+                    "Aprovacao padrao aplicada."
+                )
+                return {
+                    "aprovado": True,
+                    "motivo": "Nao foi possivel avaliar automaticamente.",
+                }

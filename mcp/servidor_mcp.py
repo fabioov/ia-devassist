@@ -1,89 +1,176 @@
-"""
-Servidor MCP — ia-devassist
-Expõe as tools dos agentes via Model Context Protocol.
-Recebe as instâncias dos agentes já inicializadas para evitar
-múltiplas instanciações desnecessárias.
+"""Servidor MCP - ia-devassist
+
+Centraliza o registro e a execucao das tools internas do projeto.
 """
 
-import sys
-from pathlib import Path
+from typing import Any, Callable
 
-sys.path.insert(0, str(Path(__file__).parent.parent))
+from tools.salvar_historico import listar_historico, salvar_historico
+
+ToolFunction = Callable[..., Any]
 
 
 class ServidorMCP:
-    """
-    Servidor MCP que padroniza o acesso às tools.
-    Recebe os agentes já inicializados via init().
-    """
+    """Registra e executa tools usando agentes ja inicializados."""
 
-    def __init__(self):
-        self._recuperador  = None
-        self._sintetizador = None
-        self._revisor      = None
-        self._tools        = {}
+    def __init__(self) -> None:
+        """Inicializa a estrutura interna do servidor MCP.
 
-    def init(self, recuperador, sintetizador, revisor):
-        """Recebe as instâncias já criadas e registra as tools."""
-        self._recuperador  = recuperador
+        Args:
+            Nenhum.
+
+        Returns:
+            None.
+        """
+        self._recuperador: Any = None
+        self._sintetizador: Any = None
+        self._revisor: Any = None
+        self._tools: dict[str, dict[str, Any]] = {}
+
+    def init(self, recuperador: Any, sintetizador: Any, revisor: Any) -> None:
+        """Recebe instancias prontas dos agentes e registra as tools.
+
+        Args:
+            recuperador: Agente de recuperacao inicializado.
+            sintetizador: Agente de sintese inicializado.
+            revisor: Agente de revisao inicializado.
+
+        Returns:
+            None.
+        """
+        self._recuperador = recuperador
         self._sintetizador = sintetizador
-        self._revisor      = revisor
+        self._revisor = revisor
         self._registrar_tools()
 
-    def _registrar_tools(self):
-        from tools.salvar_historico import salvar_historico, listar_historico
-
+    def _registrar_tools(self) -> None:
+        """Registra as tools disponiveis no servidor."""
         self._tools = {
             "buscar_documentacao": {
-                "descricao":  "Busca trechos relevantes na documentação oficial do Python.",
+                "descricao": "Busca trechos relevantes na documentacao.",
                 "parametros": ["query"],
-                "funcao":     lambda query: self._recuperador.buscar(query, fonte="docs_python"),
+                "funcao": self._buscar_documentacao,
             },
             "buscar_stackoverflow": {
-                "descricao":  "Busca trechos relevantes no Stack Overflow (base local).",
+                "descricao": "Busca trechos relevantes no Stack Overflow.",
                 "parametros": ["query"],
-                "funcao":     lambda query: self._recuperador.buscar(query, fonte="stackoverflow"),
+                "funcao": self._buscar_stackoverflow,
             },
             "verificar_coerencia": {
-                "descricao":  "Verifica se uma resposta é coerente com os contextos recuperados.",
+                "descricao": "Verifica a coerencia entre resposta e contexto.",
                 "parametros": ["resposta", "contextos"],
-                "funcao":     lambda resposta, contextos: self._revisor.revisar(resposta, contextos),
+                "funcao": self._verificar_coerencia,
             },
             "salvar_historico": {
-                "descricao":  "Salva a pergunta e resposta no histórico local.",
+                "descricao": "Salva uma entrada no historico local.",
                 "parametros": ["pergunta", "resposta"],
-                "funcao":     salvar_historico,
+                "funcao": salvar_historico,
             },
             "listar_historico": {
-                "descricao":  "Lista todas as entradas do histórico.",
+                "descricao": "Lista as entradas do historico local.",
                 "parametros": [],
-                "funcao":     listar_historico,
+                "funcao": listar_historico,
             },
         }
 
-    def listar_tools(self) -> list[dict]:
+    def _buscar_documentacao(self, query: str) -> list[dict[str, str]]:
+        """Executa a busca na documentacao oficial."""
+        if self._recuperador is None:
+            raise RuntimeError("Agente recuperador nao foi inicializado.")
+        return self._recuperador.buscar(query, fonte="docs_python")
+
+    def _buscar_stackoverflow(self, query: str) -> list[dict[str, str]]:
+        """Executa a busca na base local do Stack Overflow."""
+        if self._recuperador is None:
+            raise RuntimeError("Agente recuperador nao foi inicializado.")
+        return self._recuperador.buscar(query, fonte="stackoverflow")
+
+    def _verificar_coerencia(
+        self,
+        resposta: str,
+        contextos: dict[str, list[dict[str, str]]],
+    ) -> dict[str, bool | str]:
+        """Executa a revisao de coerencia com o agente revisor."""
+        if self._revisor is None:
+            raise RuntimeError("Agente revisor nao foi inicializado.")
+        return self._revisor.revisar(resposta, contextos)
+
+    def listar_tools(self) -> list[dict[str, Any]]:
+        """Lista os metadados das tools registradas.
+
+        Args:
+            Nenhum.
+
+        Returns:
+            Lista com nome, descricao e parametros de cada tool.
+        """
         return [
-            {"nome": nome, "descricao": info["descricao"], "parametros": info["parametros"]}
+            {
+                "nome": nome,
+                "descricao": info["descricao"],
+                "parametros": info["parametros"],
+            }
             for nome, info in self._tools.items()
         ]
 
-    def executar(self, nome_tool: str, parametros: dict) -> dict:
+    def executar(self, nome_tool: str, parametros: dict[str, Any]) -> dict[str, Any]:
+        """Executa uma tool registrada com os parametros informados.
+
+        Args:
+            nome_tool: Nome da tool registrada.
+            parametros: Parametros esperados pela tool.
+
+        Returns:
+            Resultado padronizado com sucesso, erro ou payload.
+        """
         if not self._tools:
-            return {"sucesso": False, "erro": "Servidor MCP não inicializado. Chame init() primeiro."}
+            return {
+                "sucesso": False,
+                "erro": (
+                    "Servidor MCP nao inicializado. Chame `init()` antes de "
+                    "usar as tools."
+                ),
+            }
 
         if nome_tool not in self._tools:
             return {
                 "sucesso": False,
-                "erro": f"Tool '{nome_tool}' não encontrada. Disponíveis: {list(self._tools.keys())}",
+                "erro": (
+                    f"Tool '{nome_tool}' nao encontrada. Disponiveis: "
+                    f"{list(self._tools.keys())}"
+                ),
             }
 
+        info_tool = self._tools[nome_tool]
+        esperados = set(info_tool["parametros"])
+        recebidos = set(parametros)
+        faltantes = esperados - recebidos
+        excedentes = recebidos - esperados
+
+        if faltantes:
+            return {
+                "sucesso": False,
+                "erro": (
+                    f"Parametros ausentes para '{nome_tool}': "
+                    f"{sorted(faltantes)}"
+                ),
+            }
+        if excedentes:
+            return {
+                "sucesso": False,
+                "erro": (
+                    f"Parametros inesperados para '{nome_tool}': "
+                    f"{sorted(excedentes)}"
+                ),
+            }
+
+        funcao: ToolFunction = info_tool["funcao"]
         try:
-            funcao    = self._tools[nome_tool]["funcao"]
             resultado = funcao(**parametros)
-            return {"sucesso": True, "resultado": resultado}
-        except Exception as e:
-            return {"sucesso": False, "erro": str(e)}
+        except (RuntimeError, TypeError, ValueError, OSError) as exc:
+            return {"sucesso": False, "erro": str(exc)}
+
+        return {"sucesso": True, "resultado": resultado}
 
 
-# Instância global
 servidor_mcp = ServidorMCP()

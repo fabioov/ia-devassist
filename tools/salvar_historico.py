@@ -1,60 +1,102 @@
-"""
-Tool: salvar_historico
-Salva a pergunta e resposta em um arquivo local de histórico.
+"""Tool salvar_historico - ia-devassist
+
+Persiste e recupera o historico local de perguntas e respostas.
 """
 
 import json
+import logging
 from datetime import datetime
-from pathlib import Path
+from json import JSONDecodeError
 
-HISTORICO_PATH = Path(__file__).parent.parent / "historico.json"
+from config import HISTORICO_PATH
+
+logger = logging.getLogger(__name__)
 
 
-def salvar_historico(pergunta: str, resposta: str) -> dict:
-    """
-    Salva a pergunta e resposta no histórico local.
+def _carregar_historico() -> list[dict[str, str]]:
+    """Carrega o historico do disco quando disponivel."""
+    if not HISTORICO_PATH.exists():
+        return []
+
+    try:
+        return json.loads(HISTORICO_PATH.read_text(encoding="utf-8"))
+    except JSONDecodeError as exc:
+        logger.warning(
+            "Historico invalido em %s. Um novo arquivo sera criado.",
+            HISTORICO_PATH,
+        )
+        raise ValueError(
+            "O arquivo de historico esta corrompido. Remova-o ou corrija "
+            "o JSON antes de continuar."
+        ) from exc
+    except OSError as exc:
+        raise RuntimeError(
+            "Nao foi possivel ler o arquivo de historico. Verifique as "
+            "permissoes do projeto."
+        ) from exc
+
+
+def salvar_historico(pergunta: str, resposta: str) -> dict[str, int | bool]:
+    """Salva uma nova entrada no historico local.
 
     Args:
-        pergunta: A dúvida do usuário.
-        resposta: A resposta gerada pelo sistema.
+        pergunta: Pergunta enviada pelo usuario.
+        resposta: Resposta gerada pelo sistema.
 
     Returns:
-        Dict com 'sucesso' (bool) e 'total_entradas' (int).
+        Resultado da operacao com sucesso e total de entradas.
     """
-    historico = []
+    if not pergunta.strip():
+        raise ValueError("A pergunta do historico nao pode estar vazia.")
+    if not resposta.strip():
+        raise ValueError("A resposta do historico nao pode estar vazia.")
 
+    historico: list[dict[str, str]] = []
     if HISTORICO_PATH.exists():
         try:
-            historico = json.loads(HISTORICO_PATH.read_text(encoding="utf-8"))
-        except Exception:
+            historico = _carregar_historico()
+        except ValueError:
+            logger.warning(
+                "Historico existente sera reiniciado por conter JSON invalido."
+            )
             historico = []
 
-    entrada = {
-        "data":     datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-        "pergunta": pergunta,
-        "resposta": resposta,
-    }
+    historico.append(
+        {
+            "data": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            "pergunta": pergunta,
+            "resposta": resposta,
+        }
+    )
 
-    historico.append(entrada)
-    HISTORICO_PATH.write_text(json.dumps(historico, ensure_ascii=False, indent=2), encoding="utf-8")
+    try:
+        HISTORICO_PATH.write_text(
+            json.dumps(historico, ensure_ascii=False, indent=2),
+            encoding="utf-8",
+        )
+    except OSError as exc:
+        raise RuntimeError(
+            "Nao foi possivel salvar o historico. Verifique espaco em "
+            "disco e permissoes de escrita."
+        ) from exc
 
     return {"sucesso": True, "total_entradas": len(historico)}
 
 
-def listar_historico() -> list[dict]:
-    """Retorna todas as entradas do histórico."""
-    if not HISTORICO_PATH.exists():
-        return []
+def listar_historico() -> list[dict[str, str]]:
+    """Lista todas as entradas do historico local.
+
+    Args:
+        Nenhum.
+
+    Returns:
+        Lista de entradas do historico.
+    """
     try:
-        return json.loads(HISTORICO_PATH.read_text(encoding="utf-8"))
-    except Exception:
+        return _carregar_historico()
+    except ValueError:
+        logger.warning(
+            "Historico invalido detectado durante listagem. "
+            "Retornando lista vazia."
+        )
         return []
-
-
-if __name__ == "__main__":
-    resultado = salvar_historico(
-        pergunta="Como usar list comprehension?",
-        resposta="List comprehension é uma forma compacta de criar listas..."
-    )
-    print(f"Salvo! Total de entradas: {resultado['total_entradas']}")
-    print(f"Arquivo: {HISTORICO_PATH}")

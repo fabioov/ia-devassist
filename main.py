@@ -1,12 +1,18 @@
-"""
-ia-devassist — Assistente Técnico de Programação
-Interface de terminal (CLI) que orquestra os três agentes.
+"""CLI principal - ia-devassist
 
-Execute: python3 main.py
+Orquestra a interface de terminal e a execucao dos agentes via MCP.
 """
 
-import sys
+import logging
 import os
+import subprocess
+import sys
+from typing import Any
+
+from config import HISTORICO_MAX_EXIBIR, MAX_TENTATIVAS_REVISOR
+
+logging.basicConfig(level=logging.WARNING)
+logger = logging.getLogger(__name__)
 
 BANNER = """
 ╔══════════════════════════════════════════════╗
@@ -21,96 +27,163 @@ Comandos especiais:
   sair       → encerrar o programa
 """
 
-def limpar_tela():
-    os.system("clear" if os.name == "posix" else "cls")
 
-def mostrar_historico(servidor_mcp):
+def limpar_tela() -> None:
+    """Limpa a tela do terminal.
+
+    Args:
+        Nenhum.
+
+    Returns:
+        None.
+    """
+    comando = ["clear"] if os.name == "posix" else ["cmd", "/c", "cls"]
+    subprocess.run(comando, check=False)
+
+
+def mostrar_historico(servidor_mcp: Any) -> None:
+    """Exibe as entradas mais recentes do historico.
+
+    Args:
+        servidor_mcp: Instancia do servidor MCP inicializado.
+
+    Returns:
+        None.
+    """
     resultado = servidor_mcp.executar("listar_historico", {})
-    entradas  = resultado.get("resultado", []) if resultado["sucesso"] else []
+    entradas = resultado.get("resultado", []) if resultado["sucesso"] else []
     if not entradas:
         print("\n📭 Nenhuma pergunta no histórico ainda.\n")
         return
+
     print(f"\n📚 Histórico — {len(entradas)} pergunta(s):\n")
-    for i, entrada in enumerate(entradas[-5:], 1):
-        print(f"[{i}] {entrada['data']}")
+    for indice, entrada in enumerate(entradas[-HISTORICO_MAX_EXIBIR:], 1):
+        print(f"[{indice}] {entrada['data']}")
         print(f"     {entrada['pergunta']}")
         print()
 
-def processar_pergunta(pergunta: str, sintetizador, servidor_mcp) -> str:
-    """Orquestra o fluxo: Recuperador → Sintetizador → Revisor via MCP."""
 
-    # Passo 1: Recuperar contexto via MCP
-    r_docs = servidor_mcp.executar("buscar_documentacao", {"query": pergunta})
-    r_so   = servidor_mcp.executar("buscar_stackoverflow", {"query": pergunta})
+def processar_pergunta(
+    pergunta: str,
+    sintetizador: Any,
+    servidor_mcp: Any,
+) -> str:
+    """Processa uma pergunta com recuperacao, sintese e revisao.
+
+    Args:
+        pergunta: Duvida enviada pelo usuario.
+        sintetizador: Instancia do agente sintetizador.
+        servidor_mcp: Instancia do servidor MCP inicializado.
+
+    Returns:
+        Resposta final gerada para o usuario.
+    """
+    if not pergunta.strip():
+        raise ValueError("A pergunta nao pode estar vazia.")
+
+    resultado_docs = servidor_mcp.executar(
+        "buscar_documentacao",
+        {"query": pergunta},
+    )
+    resultado_so = servidor_mcp.executar(
+        "buscar_stackoverflow",
+        {"query": pergunta},
+    )
 
     contextos = {
-        "docs_python":   r_docs["resultado"] if r_docs["sucesso"] else [],
-        "stackoverflow": r_so["resultado"]   if r_so["sucesso"]   else [],
+        "docs_python": (
+            resultado_docs["resultado"] if resultado_docs["sucesso"] else []
+        ),
+        "stackoverflow": (
+            resultado_so["resultado"] if resultado_so["sucesso"] else []
+        ),
     }
 
-    # Passo 2: Sintetizar resposta
     resposta = sintetizador.gerar(pergunta, contextos)
-
-    # Passo 3: Revisar coerência via MCP
-    r_rev     = servidor_mcp.executar("verificar_coerencia", {"resposta": resposta, "contextos": contextos})
-    avaliacao = r_rev.get("resultado", {"aprovado": True}) if r_rev["sucesso"] else {"aprovado": True}
-
-    # Se reprovado, tenta uma vez mais
-    if not avaliacao.get("aprovado", True):
+    for tentativa in range(1, MAX_TENTATIVAS_REVISOR + 1):
+        resultado_revisao = servidor_mcp.executar(
+            "verificar_coerencia",
+            {"resposta": resposta, "contextos": contextos},
+        )
+        avaliacao = (
+            resultado_revisao.get("resultado", {"aprovado": True})
+            if resultado_revisao["sucesso"]
+            else {"aprovado": True}
+        )
+        if avaliacao.get("aprovado", True):
+            break
+        if tentativa >= MAX_TENTATIVAS_REVISOR:
+            logger.warning(
+                "Resposta permaneceu reprovada apos %s tentativa(s).",
+                tentativa,
+            )
+            break
         print("\n⚠️  Revisor solicitou nova geração...\n")
         resposta = sintetizador.gerar(pergunta, contextos)
 
-    # Passo 4: Salvar no histórico via MCP
-    servidor_mcp.executar("salvar_historico", {"pergunta": pergunta, "resposta": resposta})
+    resultado_historico = servidor_mcp.executar(
+        "salvar_historico",
+        {"pergunta": pergunta, "resposta": resposta},
+    )
+    if not resultado_historico["sucesso"]:
+        logger.warning(
+            "Falha ao salvar historico: %s",
+            resultado_historico["erro"],
+        )
 
     return resposta
 
 
-def main():
+def main() -> None:
+    """Inicializa a aplicacao e executa o loop principal.
+
+    Args:
+        Nenhum.
+
+    Returns:
+        None.
+    """
     limpar_tela()
     print(BANNER)
-
-    # Inicializa os agentes uma única vez
     print("⏳ Inicializando agentes...\n")
+
     try:
-        from agents.recuperador  import AgenteRecuperador
+        from agents.recuperador import AgenteRecuperador
+        from agents.revisor import AgenteRevisor
         from agents.sintetizador import AgenteSintetizador
-        from agents.revisor      import AgenteRevisor
-        from mcp.servidor_mcp   import servidor_mcp
+        from mcp.servidor_mcp import servidor_mcp
 
-        recuperador  = AgenteRecuperador()
+        recuperador = AgenteRecuperador()
         sintetizador = AgenteSintetizador()
-        revisor      = AgenteRevisor()
-
-        # Injeta as instâncias no servidor MCP — sem recriação!
+        revisor = AgenteRevisor()
         servidor_mcp.init(recuperador, sintetizador, revisor)
-
-    except Exception as e:
-        print(f"❌ Erro ao inicializar: {e}")
-        print("Verifique se o Ollama está rodando e o banco vetorial foi indexado.")
+    except (ImportError, RuntimeError, ValueError) as exc:
+        print(f"❌ Erro ao inicializar: {exc}")
+        print(
+            "Verifique se o Ollama esta rodando e se a base foi indexada "
+            "com `python3 rag/indexar.py`."
+        )
         sys.exit(1)
 
     print("✅ Agentes prontos! Pode fazer sua pergunta.\n")
     print("─" * 48)
 
-    # Loop principal
     while True:
         try:
             pergunta = input("\n🧑 Você: ").strip()
-        except (KeyboardInterrupt, EOFError):
+        except (EOFError, KeyboardInterrupt):
             print("\n\n👋 Encerrando ia-devassist. Até mais!\n")
             break
 
         if not pergunta:
             continue
-
         if pergunta.lower() == "sair":
             print("\n👋 Encerrando ia-devassist. Até mais!\n")
             break
-        elif pergunta.lower() == "historico":
+        if pergunta.lower() == "historico":
             mostrar_historico(servidor_mcp)
             continue
-        elif pergunta.lower() == "limpar":
+        if pergunta.lower() == "limpar":
             limpar_tela()
             print(BANNER)
             continue
@@ -118,13 +191,18 @@ def main():
         print()
         try:
             resposta = processar_pergunta(pergunta, sintetizador, servidor_mcp)
-            print("\n🤖 ia-devassist:")
-            print("─" * 48)
-            print(resposta)
-            print("─" * 48)
-        except Exception as e:
-            print(f"\n❌ Erro: {e}")
-            print("Tente novamente ou verifique se o Ollama está rodando.\n")
+        except (RuntimeError, ValueError) as exc:
+            print(f"\n❌ Erro: {exc}")
+            print(
+                "Tente novamente ou verifique se o Ollama esta rodando "
+                "corretamente.\n"
+            )
+            continue
+
+        print("\n🤖 ia-devassist:")
+        print("─" * 48)
+        print(resposta)
+        print("─" * 48)
 
 
 if __name__ == "__main__":

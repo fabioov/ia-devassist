@@ -1,35 +1,40 @@
+"""Tool buscar_stackoverflow - ia-devassist
+
+Busca trechos relevantes na base local indexada do Stack Overflow.
 """
-Tool: buscar_stackoverflow
-Busca trechos relevantes nas perguntas do Stack Overflow indexadas.
-"""
+
+import logging
 
 from agents.recuperador import AgenteRecuperador
 
-_recuperador = None
+logger = logging.getLogger(__name__)
 
-def get_recuperador():
+_recuperador: AgenteRecuperador | None = None
+
+
+def get_recuperador() -> AgenteRecuperador:
+    """Retorna uma instancia singleton do agente recuperador.
+
+    Args:
+        Nenhum.
+
+    Returns:
+        Instancia pronta do agente recuperador.
+    """
     global _recuperador
     if _recuperador is None:
+        logger.info("Criando instancia singleton do agente recuperador.")
         _recuperador = AgenteRecuperador()
     return _recuperador
 
 
-def buscar_stackoverflow(query: str) -> list[dict]:
-    """
-    Busca os trechos mais relevantes no Stack Overflow (base local).
+def buscar_stackoverflow(query: str) -> list[dict[str, str]]:
+    """Busca trechos relevantes na base local do Stack Overflow.
 
     Args:
         query: Pergunta ou termo a buscar.
 
     Returns:
-        Lista de dicts com 'texto' e 'arquivo'.
+        Lista de contextos encontrados na base local do Stack Overflow.
     """
-    recuperador = get_recuperador()
-    resultados = recuperador.buscar(query, fonte="stackoverflow")
-    return resultados
-
-
-if __name__ == "__main__":
-    resultados = buscar_stackoverflow("como usar generators em Python")
-    for i, r in enumerate(resultados, 1):
-        print(f"[{i}] {r['arquivo']}\n{r['texto'][:200]}\n")
+    return get_recuperador().buscar(query, fonte="stackoverflow")

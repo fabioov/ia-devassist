@@ -1,0 +1,12 @@
+__pycache__/
+*.pyc
+.venv/
+venv/
+rag/chroma_db/
+data/docs_python/
+data/stackoverflow/
+historico.json
+.env
+.DS_Store
+*.log
+.pytest_cache/

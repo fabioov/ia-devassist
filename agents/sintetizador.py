@@ -1,14 +1,17 @@
-"""
-Agente Sintetizador — ia-devassist
-Recebe a pergunta do usuário + contextos recuperados e gera
-uma resposta clara usando o LLM local (Ollama).
+"""Agente Sintetizador - ia-devassist
+
+Gera a resposta final a partir da pergunta do usuario e dos contextos
+recuperados.
 """
 
-from langchain_ollama import OllamaLLM
+import logging
+
 from langchain.prompts import PromptTemplate
+from langchain_ollama import OllamaLLM
 
-# ── Configuração ──────────────────────────────
-LLM_MODEL = "llama3.2:3b"
+from config import LLM_MODEL
+
+logger = logging.getLogger(__name__)
 
 PROMPT_TEMPLATE = """Você é um assistente técnico especializado em programação Python.
 Use apenas os contextos abaixo para responder a pergunta do usuário.
@@ -29,67 +32,81 @@ Se os contextos não forem suficientes para responder, diga que não encontrou i
 
 
 class AgenteSintetizador:
-    """
-    Agente responsável por gerar a resposta final.
-    Usa o LLM local (Ollama) com os contextos recuperados pelo Agente Recuperador.
-    """
+    """Gera respostas com base nos contextos recuperados."""
 
-    def __init__(self):
-        print("[Sintetizador] Conectando ao modelo local...")
-        self.llm = OllamaLLM(model=LLM_MODEL)
-        self.prompt = PromptTemplate(
-            input_variables=["contexto_docs", "contexto_so", "pergunta"],
-            template=PROMPT_TEMPLATE,
-        )
-        self.chain = self.prompt | self.llm
-        print("[Sintetizador] Pronto.\n")
-
-    def _formatar_contextos(self, contextos: list[dict]) -> str:
-        """Formata a lista de contextos em texto para o prompt."""
-        if not contextos:
-            return "Nenhum contexto encontrado."
-        partes = []
-        for i, ctx in enumerate(contextos, 1):
-            partes.append(f"[{i}] ({ctx['arquivo']})\n{ctx['texto'][:600]}")
-        return "\n\n".join(partes)
-
-    def gerar(self, pergunta: str, contextos: dict) -> str:
-        """
-        Gera uma resposta com base na pergunta e nos contextos.
+    def __init__(self) -> None:
+        """Inicializa o modelo de linguagem e o prompt da cadeia.
 
         Args:
-            pergunta: A dúvida do usuário.
-            contextos: Dict com 'docs_python' e 'stackoverflow' (saída do Recuperador).
+            Nenhum.
+
+        Returns:
+            None.
+        """
+        logger.info("Conectando ao modelo local %s.", LLM_MODEL)
+        try:
+            self.llm = OllamaLLM(model=LLM_MODEL)
+            self.prompt = PromptTemplate(
+                input_variables=["contexto_docs", "contexto_so", "pergunta"],
+                template=PROMPT_TEMPLATE,
+            )
+            self.chain = self.prompt | self.llm
+        except (OSError, RuntimeError, ValueError) as exc:
+            raise RuntimeError(
+                "Nao foi possivel inicializar o modelo local. Verifique se "
+                "o Ollama esta em execucao e se o modelo configurado existe."
+            ) from exc
+
+    def _formatar_contextos(self, contextos: list[dict[str, str]]) -> str:
+        """Formata os contextos para o prompt do modelo."""
+        if not contextos:
+            return "Nenhum contexto encontrado."
+
+        partes: list[str] = []
+        for indice, contexto in enumerate(contextos, 1):
+            partes.append(
+                f"[{indice}] ({contexto['arquivo']})\n"
+                f"{contexto['texto'][:600]}"
+            )
+        return "\n\n".join(partes)
+
+    def gerar(
+        self,
+        pergunta: str,
+        contextos: dict[str, list[dict[str, str]]],
+    ) -> str:
+        """Gera uma resposta com base na pergunta e nos contextos.
+
+        Args:
+            pergunta: Duvida enviada pelo usuario.
+            contextos: Contextos agrupados por fonte.
 
         Returns:
             Resposta gerada pelo LLM como string.
         """
-        print("[Sintetizador] Gerando resposta...")
+        if not pergunta.strip():
+            raise ValueError("A pergunta para geracao nao pode estar vazia.")
 
-        contexto_docs = self._formatar_contextos(contextos.get("docs_python", []))
-        contexto_so   = self._formatar_contextos(contextos.get("stackoverflow", []))
+        contexto_docs = self._formatar_contextos(
+            contextos.get("docs_python", [])
+        )
+        contexto_so = self._formatar_contextos(
+            contextos.get("stackoverflow", [])
+        )
 
-        resposta = self.chain.invoke({
-            "contexto_docs": contexto_docs,
-            "contexto_so":   contexto_so,
-            "pergunta":      pergunta,
-        })
+        logger.info("Gerando resposta com o modelo local.")
+        try:
+            resposta = self.chain.invoke(
+                {
+                    "contexto_docs": contexto_docs,
+                    "contexto_so": contexto_so,
+                    "pergunta": pergunta,
+                }
+            )
+        except (OSError, RuntimeError, ValueError) as exc:
+            raise RuntimeError(
+                "Falha ao gerar resposta com o modelo local. Verifique a "
+                "disponibilidade do Ollama e tente novamente."
+            ) from exc
 
-        print("[Sintetizador] Resposta gerada.\n")
-        return resposta.strip()
-
-
-# ── Teste rápido ──────────────────────────────
-if __name__ == "__main__":
-    from agents.recuperador import AgenteRecuperador
-
-    pergunta = "Como usar list comprehension em Python?"
-
-    recuperador  = AgenteRecuperador()
-    sintetizador = AgenteSintetizador()
-
-    contextos = recuperador.buscar_todos(pergunta)
-    resposta  = sintetizador.gerar(pergunta, contextos)
-
-    print("── Resposta ──────────────────────────────")
-    print(resposta)
+        return str(resposta).strip()
