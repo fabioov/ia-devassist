@@ -3,5 +3,10 @@
     "data": "2026-06-08 12:13:36",
     "pergunta": "Teste MCP",
     "resposta": "Funcionando!"
+  },
+  {
+    "data": "2026-06-08 12:16:47",
+    "pergunta": "Como crio um projeto em Python",
+    "resposta": "Olá! Estou aqui para ajudar.\n\n**Criando um projeto em Python**\n\nCriar um projeto em Python é um passo importante para começar a desenvolver uma aplicação. Aqui estão algumas dicas para criar um projeto bem estruturado:\n\n1. **Crie um diretório para o seu projeto**: Crie um novo diretório e nomenclque-o com o nome do seu projeto.\n2. **Crie subdiretórios**: Crie subdiretórios para suas pastas de código, documentos, imagens e outros recursos relacionados ao seu projeto.\n3. **Organize seus arquivos**: Organize seus arquivos de forma lógica, com nomes descreventes e hierárquicas.\n4. **Instale os requisitos necessários**: Instale as bibliotecas e ferramentas necessárias para o seu projeto usando `pip` ou outra forma de instalação.\n5. **Crie um arquivo de inicialização**: Crie um arquivo de inicialização, como `main.py`, para iniciar o seu projeto.\n\n**Exemplo de estrutura de diretório**\n\nAqui está um exemplo de estrutura de diretório para um projeto em Python:\n```markdown\nmeu-projeto/\n|---- src/\n|       |---- main.py\n|       |---- classes/\n|       |---- functions/\n|---- docs/\n|       |---- README.md\n|       |---- UML.pdf\n|---- images/\n|---- tests/\n|---- requirements.txt\n```\n**Conclusão**\n\nCriar um projeto em Python é um processo importante que envolve a organização e estruturação de seus arquivos e diretórios. Lembre-se de criar um diretório para o seu projeto, subdiretórios para suas pastas de código e recursos, e organizar seus arquivos de forma lógica. Além disso, instale as bibliotecas e ferramentas necessárias e crie um arquivo de inicialização para iniciar o seu projeto."
   }
 ]
