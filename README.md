@@ -65,6 +65,30 @@ Usuário (terminal)
 
 ---
 
+## 🧭 Decisões de Arquitetura
+
+### Por que 3 agentes em vez de 1?
+
+Um agente único que busca, gera e revisa ao mesmo tempo tende a ser menos confiável — mistura responsabilidades e dificulta identificar onde o sistema falhou. A divisão em Recuperador, Sintetizador e Revisor permite que cada agente seja especializado, testado e substituído de forma independente. O Revisor, em particular, só existe para barrar respostas incoerentes antes de chegarem ao usuário.
+
+### Por que ChromaDB e não FAISS?
+
+O ChromaDB oferece persistência em disco nativa, filtragem por metadados (como `fonte: docs_python`) e uma API simples — tudo sem precisar de um servidor externo. O FAISS é mais performático para grandes volumes, mas exige gerenciamento manual da persistência, o que aumentaria a complexidade desnecessariamente para este projeto.
+
+### Por que LLaMA 3.2 3B e não um modelo maior?
+
+O critério principal foi rodar em hardware comum sem GPU dedicada. O LLaMA 3.2 3B ocupa ~2 GB e responde em tempo aceitável em CPU. Modelos maiores (7B+) tornariam a experiência lenta demais para uso interativo no terminal. A qualidade das respostas é suficiente para o domínio restrito do projeto (Python), especialmente com o contexto fornecido pelo RAG.
+
+### Por que MCP em vez de chamadas diretas?
+
+Chamar as tools diretamente nos agentes cria acoplamento forte — qualquer mudança na assinatura de uma função exige alterar o agente. O MCP funciona como uma camada de contrato: os agentes conhecem apenas o nome da tool e seus parâmetros, não sua implementação. Isso facilita adicionar, remover ou trocar tools sem reescrever os agentes.
+
+### Por que LangChain?
+
+LangChain fornece abstrações prontas para embeddings, text splitters, vector stores e LLMs locais via Ollama. Implementar essas integrações do zero consumiria a maior parte do tempo disponível sem agregar valor ao aprendizado dos conceitos centrais do projeto.
+
+---
+
 ## 🛠️ Tools Disponíveis
 
 Os agentes não chamam funções diretamente — acessam tudo via **servidor MCP**.
@@ -140,14 +164,14 @@ Para baixar novamente: `python3 data/baixar_docs.py`
 ## 📦 Dependências
 
 ```
-langchain
-langchain-community
-langchain-ollama
-langchain-chroma
-chromadb
-beautifulsoup4
-requests
-python-dotenv
+langchain>=0.3.0
+langchain-community>=0.3.0
+langchain-ollama>=0.3.0
+langchain-chroma>=0.1.0
+chromadb>=1.0.0
+beautifulsoup4>=4.12.0
+requests>=2.31.0
+python-dotenv>=1.0.0
 ```
 
 ---
@@ -158,7 +182,7 @@ python-dotenv
 
 ### 1. Pré-requisitos
 
-- Python 3.10 ou superior
+- Python 3.9 ou superior
 - [Ollama](https://ollama.com) instalado
 
 ### 2. Clone o repositório
@@ -171,7 +195,7 @@ cd ia-devassist
 ### 3. Instale as dependências Python
 
 ```bash
-pip install langchain langchain-community langchain-ollama langchain-chroma chromadb beautifulsoup4 requests python-dotenv
+pip install -r requirements.txt
 ```
 
 ### 4. Baixe os modelos no Ollama
@@ -223,10 +247,14 @@ O terminal vai inicializar os agentes e abrir o prompt interativo:
 
 🧑 Você: Como usar list comprehension em Python?
 
-[Recuperador] Buscando contexto relevante...
-[Sintetizador] Gerando resposta...
-[Revisor] Verificando coerência...
-[Revisor] ✅ Aprovada
+🔍 [Recuperador] Buscando contexto relevante...
+   ✓ 8 trechos recuperados
+
+✍️  [Sintetizador] Gerando resposta...
+   ✓ Resposta gerada
+
+🔎 [Revisor] Verificando coerência...
+   ✓ Aprovada
 
 🤖 ia-devassist:
 ────────────────────────────────────────────────
@@ -266,18 +294,22 @@ O que é herança em orientação a objetos?
 ```
 ia-devassist/
 ├── agents/
+│   ├── __init__.py
 │   ├── recuperador.py       ← Agente de busca vetorial
 │   ├── sintetizador.py      ← Agente gerador de respostas (LLM)
 │   └── revisor.py           ← Agente de revisão de coerência
 ├── tools/
+│   ├── __init__.py
 │   ├── buscar_documentacao.py
 │   ├── buscar_stackoverflow.py
 │   ├── verificar_coerencia.py
 │   └── salvar_historico.py
 ├── rag/
+│   ├── __init__.py
 │   ├── indexar.py           ← Script de indexação da base
 │   └── chroma_db/           ← Banco vetorial (gerado automaticamente)
 ├── mcp/
+│   ├── __init__.py
 │   └── servidor_mcp.py      ← Servidor MCP com registro de tools
 ├── data/
 │   ├── baixar_docs.py       ← Script para baixar a base de conhecimento
@@ -285,8 +317,10 @@ ia-devassist/
 │   └── stackoverflow/       ← Perguntas do Stack Overflow (JSON)
 ├── tests/
 │   └── test_agentes.py
+├── config.py                ← Configurações centralizadas
 ├── main.py                  ← Ponto de entrada — interface CLI
 ├── requirements.txt
+├── .gitignore
 ├── historico.json           ← Gerado automaticamente ao usar o sistema
 └── README.md
 ```
